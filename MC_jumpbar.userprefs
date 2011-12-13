@@ -1,0 +1,21 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="d:\J.-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\MainInterface.cs">
+    <Files>
+      <File FileName="d:\J.-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\MainInterface.cs" Line="20" Column="19" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="MC_jumpbar" expanded="True">
+            <Node name="MediaCenter" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
