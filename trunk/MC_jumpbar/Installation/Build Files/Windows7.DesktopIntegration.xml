@@ -4,220 +4,218 @@
         <name>Windows7.DesktopIntegration</name>
     </assembly>
     <members>
-        <member name="T:Windows7.DesktopIntegration.JumpListDestinations">
+        <member name="T:Windows7.DesktopIntegration.Properties.Resources">
             <summary>
-            A collection of categorized jump list destinations.
+              A strongly-typed resource class, for looking up localized strings, etc.
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.JumpListTasks">
+        <member name="P:Windows7.DesktopIntegration.Properties.Resources.ResourceManager">
             <summary>
-            A collection of jump list tasks.
+              Returns the cached ResourceManager instance used by this class.
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.IJumpListShellObject">
+        <member name="P:Windows7.DesktopIntegration.Properties.Resources.Culture">
             <summary>
-            Represents a shell object that can be inserted to an application's
-            jump list.
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <member name="M:Windows7.DesktopIntegration.IJumpListShellObject.GetShellRepresentation">
+        <member name="T:Windows7.DesktopIntegration.ThumbButton">
             <summary>
-            Gets the shell representation of an object, such as
-            <b>IShellLink</b> or <b>IShellItem</b>.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.IJumpListShellObject.Title">
-            <summary>
-            Gets or sets the object's title.
+            Represents a taskbar thumbnail button in the thumbnail toolbar.
             </summary>
         </member>
-        <member name="P:Windows7.DesktopIntegration.IJumpListShellObject.Path">
+        <member name="E:Windows7.DesktopIntegration.ThumbButton.Clicked">
             <summary>
-            Gets or sets the object's path.
+            The event that occurs when the taskbar thumbnail button
+            is clicked.
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.IJumpListDestination">
+        <member name="P:Windows7.DesktopIntegration.ThumbButton.Id">
             <summary>
-            Represents a jump list destination.
+            Gets or sets thumbnail button's id.
             </summary>
         </member>
-        <member name="P:Windows7.DesktopIntegration.IJumpListDestination.Category">
+        <member name="P:Windows7.DesktopIntegration.ThumbButton.Icon">
             <summary>
-            Gets or sets the destination's category.
+            Gets or sets the thumbnail button's icon.
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.IJumpListTask">
+        <member name="P:Windows7.DesktopIntegration.ThumbButton.Tooltip">
             <summary>
-            Represents a jump list task.
+            Gets or sets the thumbnail button's tooltip.
             </summary>
         </member>
-        <member name="P:Windows7.DesktopIntegration.IJumpListTask.Arguments">
+        <member name="P:Windows7.DesktopIntegration.ThumbButton.Visible">
             <summary>
-            Gets or sets the task's command line arguments.
+            Gets or sets the thumbnail button's visibility.
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.WindowShowCommand">
+        <member name="P:Windows7.DesktopIntegration.ThumbButton.Enabled">
             <summary>
-            Flags controlling the appearance of a window.
+            Gets or sets the thumbnail button's enabled state.
             </summary>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Hide">
+        <member name="T:Windows7.DesktopIntegration.RegistrationHelper">
             <summary>
-            Hides the window and activates another window.
+            Helper class for registering file associations.
             </summary>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Normal">
+        <member name="M:Windows7.DesktopIntegration.RegistrationHelper.RegisterFileAssociations(System.String,System.Boolean,System.String,System.String,System.String[])">
             <summary>
-            Activates and displays the window (including restoring
-            it to its original size and position).
+            Registers file associations for an application.
+            </summary>
+            <param name="progId">The application's ProgID.</param>
+            <param name="registerInHKCU">Whether to register the
+            association per-user (in HKCU).  The only supported value
+            at this time is <b>false</b>.</param>
+            <param name="appId">The application's app-id.</param>
+            <param name="openWith">The command and arguments to be used
+            when opening a shortcut to a document.</param>
+            <param name="extensions">The extensions to register.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.RegistrationHelper.UnregisterFileAssociations(System.String,System.Boolean,System.String,System.String,System.String[])">
+            <summary>
+            Unregisters file associations for an application.
+            </summary>
+            <param name="progId">The application's ProgID.</param>
+            <param name="registerInHKCU">Whether to register the
+            association per-user (in HKCU).  The only supported value
+            at this time is <b>false</b>.</param>
+            <param name="appId">The application's app-id.</param>
+            <param name="openWith">The command and arguments to be used
+            when opening a shortcut to a document.</param>
+            <param name="extensions">The extensions to unregister.</param>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions">
+            <summary>
+            Contains extension methods for easier Windows Forms interoperability.
             </summary>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Minimized">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetAppId(System.Windows.Forms.Form,System.String)">
             <summary>
-            Minimizes the window.
+            Sets this form's application id.
             </summary>
+            <param name="form">The form.</param>
+            <param name="appId">The application id.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Maximized">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.GetAppId(System.Windows.Forms.Form)">
             <summary>
-            Maximizes the window.
+            Gets this form's application id.
             </summary>
+            <param name="form">The form.</param>
+            <returns>The form's application id.</returns>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ShowNoActivate">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.EnableCustomWindowPreview(System.Windows.Forms.Form)">
             <summary>
-            Similar to <see cref="F:Windows7.DesktopIntegration.WindowShowCommand.Normal"/>, except that the window
-            is not activated.
+            Enables custom window preview on this form, meaning that
+            the DWM will send messages when a live thumbnail preview
+            or a live peek will be necessary.
             </summary>
+            <param name="form">The form.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Show">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.DisableCustomWindowPreview(System.Windows.Forms.Form)">
             <summary>
-            Activates the window and displays it in its current size
-            and position.
+            Disables custom window preview on this form, meaning that
+            the DWM will not send messages when a live thumbnail preview
+            or a live peek will be necessary, but instead rely on its
+            default rendering.
             </summary>
+            <param name="form">The form.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Minimize">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetIconicThumbnail(System.Windows.Forms.Form,System.Drawing.Bitmap)">
             <summary>
-            Minimizes the window and activates the next top-level window.
+            Sets this form's iconic thumbnail to the specified bitmap.
             </summary>
+            <param name="form">The form.</param>
+            <param name="bitmap">The bitmap.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ShowMinimizedNoActivate">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetPeekBitmap(System.Windows.Forms.Form,System.Drawing.Bitmap,System.Boolean)">
             <summary>
-            Minimizes the window and does not activate it.
+            Sets this form's peek (live preview) bitmap.
             </summary>
+            <param name="form">The form.</param>
+            <param name="bitmap">The bitmap.</param>
+            <param name="displayFrame">Whether to display a standard window
+            frame around the bitmap.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ShowNA">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarOverlayIcon(System.Windows.Forms.Form,System.Drawing.Icon,System.String)">
             <summary>
-            Similar to <see cref="F:Windows7.DesktopIntegration.WindowShowCommand.Normal"/>, except that the window is not
-            activated.
+            Draws the specified overlay icon over this form's taskbar button.
             </summary>
+            <param name="form">The form.</param>
+            <param name="icon">The overlay icon.</param>
+            <param name="description">The overlay icon's description.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Restore">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(System.Windows.Forms.ProgressBar)">
             <summary>
-            Activates and displays the window, restoring it to its original
-            size and position.
+            Sets the progress bar in the containing form's taskbar button
+            to this progress bar's progress.
             </summary>
+            <param name="progressBar">The progress bar.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Default">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(System.Windows.Forms.ToolStripProgressBar)">
             <summary>
-            Sets the show state based on the initial value specified when
-            the process was created.
+            Sets the progress bar in the containing form's taskbar button
+            to this toolstrip progress bar's progress.
             </summary>
+            <param name="progressBar">The progress bar.</param>
         </member>
-        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ForceMinimize">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(System.Windows.Forms.Form,System.Single)">
             <summary>
-            Minimizes a window, even if the thread owning the window is not
-            responding.  Use this only to minimize windows from a different
-            thread.
+            Sets the progress bar of this form's taskbar button to the
+            specified percentage.
             </summary>
+            <param name="form">The form.</param>
+            <param name="percent">The progress percentage.</param>
         </member>
-        <member name="T:Windows7.DesktopIntegration.Separator">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgressState(System.Windows.Forms.Form,Windows7.DesktopIntegration.Windows7Taskbar.ThumbnailProgressState)">
             <summary>
-            Represents a separator in the task area of the jump list.
-            There is no need to set any properties on this class.
+            Sets the progress bar of this form's taskbar button to the
+            specified state.
             </summary>
+            <param name="form">The form.</param>
+            <param name="state">The taskbar progress state.</param>
         </member>
-        <member name="T:Windows7.DesktopIntegration.ShellLink">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.CreateProgressEnabledBackgroundWorker(System.Windows.Forms.Form)">
             <summary>
-            Represents a shell link (<b>IShellLink</b>) object.
+            Creates a background worker that dispatches progress notifications
+            to the application's taskbar button.
             </summary>
+            <param name="form">The form.</param>
+            <returns>An instance of <see cref="T:System.ComponentModel.BackgroundWorker"/> that reports
+            progress through the application's taskbar button.</returns>
         </member>
-        <member name="M:Windows7.DesktopIntegration.ShellLink.GetShellRepresentation">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.CreateThumbButtonManager(System.Windows.Forms.Form)">
             <summary>
-            Gets the shell <b>IShellLink</b> representation
-            of the object.
+            Creates a taskbar thumbnail button manager for this form.
             </summary>
-            <returns>An <b>IShellLink</b> up-cast to <b>object</b>.</returns>
+            <param name="form">The form.</param>
+            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.ThumbButtonManager"/>
+            that can be used to add and manage thumbnail toolbar buttons.</returns>
         </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.Title">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.CreateJumpListManager(System.Windows.Forms.Form)">
             <summary>
-            Gets or sets the object's title.
+            Creates a jump list manager for this form.
             </summary>
+            <param name="form">The form.</param>
+            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.JumpListManager"/>
+            that can be used to manage the application's jump list.</returns>
         </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.Category">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetThumbnailClip(System.Windows.Forms.Form,System.Drawing.Rectangle)">
             <summary>
-            Gets or sets the object's category.
+            Specifies that only a portion of the form's client area
+            should be used in the form's thumbnail.
             </summary>
+            <param name="form">The form.</param>
+            <param name="clipRect">The rectangle that specifies the clipped region.</param>
         </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.Path">
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetThumbnailTooltip(System.Windows.Forms.Form,System.String)">
             <summary>
-            Gets or sets the object's path.
+            Sets the specified form's thumbnail tooltip.
             </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.IconLocation">
-            <summary>
-            Gets or sets the location of the object's icon.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.IconIndex">
-            <summary>
-            Gets or sets the index of the object's icon in the specified
-            icon's location (<see cref="P:Windows7.DesktopIntegration.ShellLink.IconLocation"/>).
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.Arguments">
-            <summary>
-            Gets or sets the object's arguments (passed to the command
-            line).
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.WorkingDirectory">
-            <summary>
-            Gets or sets the object's working directory.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.ShowCommand">
-            <summary>
-            Gets or sets the show command of the launched application.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellLink.IsSeparator">
-            <summary>
-            Gets or sets a flag indicating that the shell link
-            is a menu separator.  If this flag is set, all other
-            properties are ignored.
-            </summary>
-        </member>
-        <member name="T:Windows7.DesktopIntegration.ShellItem">
-            <summary>
-            Represents a <b>IShellItem</b> object.
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.ShellItem.GetShellRepresentation">
-            <summary>
-            Gets the shell <b>IShellItem</b> representation
-            of the object.
-            </summary>
-            <returns>An <b>IShellItem</b> up-cast to <b>object</b>.</returns>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellItem.Category">
-            <summary>
-            Gets or sets the object's category.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ShellItem.Path">
-            <summary>
-            Gets or sets the object's path.
-            </summary>
+            <param name="form">The form.</param>
+            <param name="tooltip">The tooltip text.</param>
         </member>
         <member name="T:Windows7.DesktopIntegration.Windows7Taskbar">
             <summary>
@@ -393,166 +391,151 @@
             The operation is paused (yellow).
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.RegistrationHelper">
+        <member name="T:Windows7.DesktopIntegration.BitmapRequestedEventArgs">
             <summary>
-            Helper class for registering file associations.
+            The event arguments object for the thumbnail request
+            and peek preview request events published by the
+            <see cref="T:Windows7.DesktopIntegration.CustomWindowsManager"/> class.
             </summary>
         </member>
-        <member name="M:Windows7.DesktopIntegration.RegistrationHelper.RegisterFileAssociations(System.String,System.Boolean,System.String,System.String,System.String[])">
+        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.Width">
             <summary>
-            Registers file associations for an application.
-            </summary>
-            <param name="progId">The application's ProgID.</param>
-            <param name="registerInHKCU">Whether to register the
-            association per-user (in HKCU).  The only supported value
-            at this time is <b>false</b>.</param>
-            <param name="appId">The application's app-id.</param>
-            <param name="openWith">The command and arguments to be used
-            when opening a shortcut to a document.</param>
-            <param name="extensions">The extensions to register.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.RegistrationHelper.UnregisterFileAssociations(System.String,System.Boolean,System.String,System.String,System.String[])">
-            <summary>
-            Unregisters file associations for an application.
-            </summary>
-            <param name="progId">The application's ProgID.</param>
-            <param name="registerInHKCU">Whether to register the
-            association per-user (in HKCU).  The only supported value
-            at this time is <b>false</b>.</param>
-            <param name="appId">The application's app-id.</param>
-            <param name="openWith">The command and arguments to be used
-            when opening a shortcut to a document.</param>
-            <param name="extensions">The extensions to unregister.</param>
-        </member>
-        <member name="T:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions">
-            <summary>
-            Contains extension methods for easier Windows Forms interoperability.
+            Gets the requested bitmap's width.
             </summary>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetAppId(System.Windows.Forms.Form,System.String)">
+        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.Height">
             <summary>
-            Sets this form's application id.
+            Gets the requested bitmap's height.
             </summary>
-            <param name="form">The form.</param>
-            <param name="appId">The application id.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.GetAppId(System.Windows.Forms.Form)">
+        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.UseWindowScreenshot">
             <summary>
-            Gets this form's application id.
+            Sets a flag indicating whether to use the window screenshot
+            instead of specifying a bitmap.  Note that using this feature
+            is risky because not always a window screenshot can easily
+            be snapped.  For example, minimized windows do not ever draw
+            and therefore a bitmap of them can't be taken.
             </summary>
-            <param name="form">The form.</param>
-            <returns>The form's application id.</returns>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.EnableCustomWindowPreview(System.Windows.Forms.Form)">
+        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.DoNotMirrorBitmap">
             <summary>
-            Enables custom window preview on this form, meaning that
-            the DWM will send messages when a live thumbnail preview
-            or a live peek will be necessary.
+            Specifies whether the provided bitmap is already mirrored.
+            DWM thumbnail and peek bitmaps must be mirrored vertically.
+            If this flag is set to <b>false</b>, the <see cref="T:Windows7.DesktopIntegration.CustomWindowsManager"/>
+            will mirror the bitmap automatically.
             </summary>
-            <param name="form">The form.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.DisableCustomWindowPreview(System.Windows.Forms.Form)">
+        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.DisplayFrameAroundBitmap">
             <summary>
-            Disables custom window preview on this form, meaning that
-            the DWM will not send messages when a live thumbnail preview
-            or a live peek will be necessary, but instead rely on its
-            default rendering.
+            Specifies whether a standard window frame will be displayed
+            around the bitmap.  If the bitmap represents a top-level window,
+            you would probably set this flag to <b>true</b>.  If the bitmap
+            represents a child window (or a frameless window), you would
+            probably set this flag to <b>false</b>.
             </summary>
-            <param name="form">The form.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetIconicThumbnail(System.Windows.Forms.Form,System.Drawing.Bitmap)">
+        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.Bitmap">
             <summary>
-            Sets this form's iconic thumbnail to the specified bitmap.
+            Sets the bitmap requested by the sender.
+            If the bitmap doesn't have the right dimensions,
+            the DWM may scale it or not render certain areas
+            as appropriate - it is the user's responsibility
+            to render a bitmap with the proper dimensions.
             </summary>
-            <param name="form">The form.</param>
-            <param name="bitmap">The bitmap.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetPeekBitmap(System.Windows.Forms.Form,System.Drawing.Bitmap,System.Boolean)">
+        <member name="T:Windows7.DesktopIntegration.CustomWindowsManager">
             <summary>
-            Sets this form's peek (live preview) bitmap.
+            Manages custom window representations in taskbar thumbnails
+            and DWM peek preview (Aero Peek).
             </summary>
-            <param name="form">The form.</param>
-            <param name="bitmap">The bitmap.</param>
-            <param name="displayFrame">Whether to display a standard window
-            frame around the bitmap.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarOverlayIcon(System.Windows.Forms.Form,System.Drawing.Icon,System.String)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.CreateWindowsManager(System.IntPtr)">
             <summary>
-            Draws the specified overlay icon over this form's taskbar button.
+            Creates a new instance of this class from the specified
+            window handle.
             </summary>
-            <param name="form">The form.</param>
-            <param name="icon">The overlay icon.</param>
-            <param name="description">The overlay icon's description.</param>
+            <param name="hwnd">The window handle.</param>
+            <returns>A new instance of this class wrapping the 
+            specified window handle.</returns>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(System.Windows.Forms.ProgressBar)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.CreateWindowsManager(System.IntPtr,System.IntPtr)">
             <summary>
-            Sets the progress bar in the containing form's taskbar button
-            to this progress bar's progress.
+            Creates a new instance of this class from the specified
+            window handle and parent window handle.
             </summary>
-            <param name="progressBar">The progress bar.</param>
+            <param name="hwnd">The window handle.</param>
+            <param name="parentHwnd">The parent window handle.</param>
+            <returns>A new instance of this class wrapping the
+            specified window handle and parent window handle.</returns>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(System.Windows.Forms.ToolStripProgressBar)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.#ctor(System.IntPtr)">
             <summary>
-            Sets the progress bar in the containing form's taskbar button
-            to this toolstrip progress bar's progress.
+            Creates a new instance of this class using the
+            specified window handle and enables custom window
+            preview on the window.
             </summary>
-            <param name="progressBar">The progress bar.</param>
+            <param name="hwnd">The window handle.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(System.Windows.Forms.Form,System.Single)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.InvalidatePreviews">
             <summary>
-            Sets the progress bar of this form's taskbar button to the
-            specified percentage.
+            Invalidates the previews (thumbnail bitmap and peek bitmap)
+            that the DWM has currently cached.  If this method is not called,
+            the DWM is free to use old versions of the bitmaps.
             </summary>
-            <param name="form">The form.</param>
-            <param name="percent">The progress percentage.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgressState(System.Windows.Forms.Form,Windows7.DesktopIntegration.Windows7Taskbar.ThumbnailProgressState)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.DisablePreview">
             <summary>
-            Sets the progress bar of this form's taskbar button to the
-            specified state.
+            Disables window preview features for this window.
             </summary>
-            <param name="form">The form.</param>
-            <param name="state">The taskbar progress state.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.CreateProgressEnabledBackgroundWorker(System.Windows.Forms.Form)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.EnablePreview">
             <summary>
-            Creates a background worker that dispatches progress notifications
-            to the application's taskbar button.
+            Enables window preview features for this window.
+            Window preview feature are enabled by default, unless disabled
+            by the use of the <see cref="M:Windows7.DesktopIntegration.CustomWindowsManager.DisablePreview"/> method.
             </summary>
-            <param name="form">The form.</param>
-            <returns>An instance of <see cref="T:System.ComponentModel.BackgroundWorker"/> that reports
-            progress through the application's taskbar button.</returns>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.CreateThumbButtonManager(System.Windows.Forms.Form)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.WindowClosed">
             <summary>
-            Creates a taskbar thumbnail button manager for this form.
+            Notifies the custom window manager that the underlying
+            window has been closed.  This method must be called when
+            the window is closed, or residual buttons might remain
+            in the taskbar and window handle leaks might occur.
             </summary>
-            <param name="form">The form.</param>
-            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.ThumbButtonManager"/>
-            that can be used to add and manage thumbnail toolbar buttons.</returns>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.CreateJumpListManager(System.Windows.Forms.Form)">
+        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.DispatchMessage(System.Windows.Forms.Message@)">
             <summary>
-            Creates a jump list manager for this form.
+            Dispatches a window message so that the appropriate events
+            can be invoked.
             </summary>
-            <param name="form">The form.</param>
-            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.JumpListManager"/>
-            that can be used to manage the application's jump list.</returns>
+            <param name="m">The window message, typically obtained
+            from a Windows Forms or WPF window procedure.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetThumbnailClip(System.Windows.Forms.Form,System.Drawing.Rectangle)">
+        <member name="E:Windows7.DesktopIntegration.CustomWindowsManager.PeekRequested">
             <summary>
-            Specifies that only a portion of the form's client area
-            should be used in the form's thumbnail.
+            The event that occurs when a peek bitmap must be provided
+            for the window.
             </summary>
-            <param name="form">The form.</param>
-            <param name="clipRect">The rectangle that specifies the clipped region.</param>
         </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetThumbnailTooltip(System.Windows.Forms.Form,System.String)">
+        <member name="E:Windows7.DesktopIntegration.CustomWindowsManager.ThumbnailRequested">
             <summary>
-            Sets the specified form's thumbnail tooltip.
+            The event that occurs when a thumbnail must be provided
+            for the window.
             </summary>
-            <param name="form">The form.</param>
-            <param name="tooltip">The tooltip text.</param>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.ScreenCapture">
+            <summary>
+            Contains utility methods associated with screen capturing.
+            </summary>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.ScreenCapture.GrabWindowBitmap(System.IntPtr,System.Drawing.Size)">
+            <summary>
+            Captures a screenshot of the specified window at the specified
+            bitmap size.
+            </summary>
+            <param name="hwnd">The window handle.</param>
+            <param name="bitmapSize">The requested bitmap size.</param>
+            <returns>A screen capture of the window.</returns>
         </member>
         <member name="T:Windows7.DesktopIntegration.JumpListManager">
             <summary>
@@ -795,284 +778,6 @@
             there is no real work to do with the jump list.
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.Properties.Resources">
-            <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.Properties.Resources.ResourceManager">
-            <summary>
-              Returns the cached ResourceManager instance used by this class.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.Properties.Resources.Culture">
-            <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
-            </summary>
-        </member>
-        <member name="T:Windows7.DesktopIntegration.BitmapRequestedEventArgs">
-            <summary>
-            The event arguments object for the thumbnail request
-            and peek preview request events published by the
-            <see cref="T:Windows7.DesktopIntegration.CustomWindowsManager"/> class.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.Width">
-            <summary>
-            Gets the requested bitmap's width.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.Height">
-            <summary>
-            Gets the requested bitmap's height.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.UseWindowScreenshot">
-            <summary>
-            Sets a flag indicating whether to use the window screenshot
-            instead of specifying a bitmap.  Note that using this feature
-            is risky because not always a window screenshot can easily
-            be snapped.  For example, minimized windows do not ever draw
-            and therefore a bitmap of them can't be taken.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.DoNotMirrorBitmap">
-            <summary>
-            Specifies whether the provided bitmap is already mirrored.
-            DWM thumbnail and peek bitmaps must be mirrored vertically.
-            If this flag is set to <b>false</b>, the <see cref="T:Windows7.DesktopIntegration.CustomWindowsManager"/>
-            will mirror the bitmap automatically.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.DisplayFrameAroundBitmap">
-            <summary>
-            Specifies whether a standard window frame will be displayed
-            around the bitmap.  If the bitmap represents a top-level window,
-            you would probably set this flag to <b>true</b>.  If the bitmap
-            represents a child window (or a frameless window), you would
-            probably set this flag to <b>false</b>.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.BitmapRequestedEventArgs.Bitmap">
-            <summary>
-            Sets the bitmap requested by the sender.
-            If the bitmap doesn't have the right dimensions,
-            the DWM may scale it or not render certain areas
-            as appropriate - it is the user's responsibility
-            to render a bitmap with the proper dimensions.
-            </summary>
-        </member>
-        <member name="T:Windows7.DesktopIntegration.CustomWindowsManager">
-            <summary>
-            Manages custom window representations in taskbar thumbnails
-            and DWM peek preview (Aero Peek).
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.CreateWindowsManager(System.IntPtr)">
-            <summary>
-            Creates a new instance of this class from the specified
-            window handle.
-            </summary>
-            <param name="hwnd">The window handle.</param>
-            <returns>A new instance of this class wrapping the 
-            specified window handle.</returns>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.CreateWindowsManager(System.IntPtr,System.IntPtr)">
-            <summary>
-            Creates a new instance of this class from the specified
-            window handle and parent window handle.
-            </summary>
-            <param name="hwnd">The window handle.</param>
-            <param name="parentHwnd">The parent window handle.</param>
-            <returns>A new instance of this class wrapping the
-            specified window handle and parent window handle.</returns>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.#ctor(System.IntPtr)">
-            <summary>
-            Creates a new instance of this class using the
-            specified window handle and enables custom window
-            preview on the window.
-            </summary>
-            <param name="hwnd">The window handle.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.InvalidatePreviews">
-            <summary>
-            Invalidates the previews (thumbnail bitmap and peek bitmap)
-            that the DWM has currently cached.  If this method is not called,
-            the DWM is free to use old versions of the bitmaps.
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.DisablePreview">
-            <summary>
-            Disables window preview features for this window.
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.EnablePreview">
-            <summary>
-            Enables window preview features for this window.
-            Window preview feature are enabled by default, unless disabled
-            by the use of the <see cref="M:Windows7.DesktopIntegration.CustomWindowsManager.DisablePreview"/> method.
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.WindowClosed">
-            <summary>
-            Notifies the custom window manager that the underlying
-            window has been closed.  This method must be called when
-            the window is closed, or residual buttons might remain
-            in the taskbar and window handle leaks might occur.
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.CustomWindowsManager.DispatchMessage(System.Windows.Forms.Message@)">
-            <summary>
-            Dispatches a window message so that the appropriate events
-            can be invoked.
-            </summary>
-            <param name="m">The window message, typically obtained
-            from a Windows Forms or WPF window procedure.</param>
-        </member>
-        <member name="E:Windows7.DesktopIntegration.CustomWindowsManager.PeekRequested">
-            <summary>
-            The event that occurs when a peek bitmap must be provided
-            for the window.
-            </summary>
-        </member>
-        <member name="E:Windows7.DesktopIntegration.CustomWindowsManager.ThumbnailRequested">
-            <summary>
-            The event that occurs when a thumbnail must be provided
-            for the window.
-            </summary>
-        </member>
-        <member name="T:Windows7.DesktopIntegration.ScreenCapture">
-            <summary>
-            Contains utility methods associated with screen capturing.
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.ScreenCapture.GrabWindowBitmap(System.IntPtr,System.Drawing.Size)">
-            <summary>
-            Captures a screenshot of the specified window at the specified
-            bitmap size.
-            </summary>
-            <param name="hwnd">The window handle.</param>
-            <param name="bitmapSize">The requested bitmap size.</param>
-            <returns>A screen capture of the window.</returns>
-        </member>
-        <member name="T:Windows7.DesktopIntegration.WindowsForms.WPFExtensions">
-            <summary>
-            Contains extension methods for easier Windows Forms interoperability.
-            </summary>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetAppId(System.Windows.Window,System.String)">
-            <summary>
-            Sets this Window's application id.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="appId">The application id.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.GetAppId(System.Windows.Window)">
-            <summary>
-            Gets this Window's application id.
-            </summary>
-            <param name="form">The form.</param>
-            <returns>The form's application id.</returns>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.EnableCustomWindowPreview(System.Windows.Window)">
-            <summary>
-            Enables custom window preview on this Window, meaning that
-            the DWM will send messages when a live thumbnail preview
-            or a live peek will be necessary.
-            </summary>
-            <param name="form">The form.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.DisableCustomWindowPreview(System.Windows.Window)">
-            <summary>
-            Disables custom window preview on this Window, meaning that
-            the DWM will not send messages when a live thumbnail preview
-            or a live peek will be necessary, but instead rely on its
-            default rendering.
-            </summary>
-            <param name="form">The form.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetIconicThumbnail(System.Windows.Window,System.Drawing.Bitmap)">
-            <summary>
-            Sets this Window's iconic thumbnail to the specified bitmap.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="bitmap">The bitmap.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetPeekBitmap(System.Windows.Window,System.Drawing.Bitmap,System.Boolean)">
-            <summary>
-            Sets this Window's peek (live preview) bitmap.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="bitmap">The bitmap.</param>
-            <param name="displayFrame">Whether to display a standard window
-            frame around the bitmap.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetTaskbarOverlayIcon(System.Windows.Window,System.Drawing.Icon,System.String)">
-            <summary>
-            Draws the specified overlay icon over this Window's taskbar button.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="icon">The overlay icon.</param>
-            <param name="description">The overlay icon's description.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetTaskbarProgress(System.Windows.Window,System.Single)">
-            <summary>
-            Sets the progress bar of this Window's taskbar button to the
-            specified percentage.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="percent">The progress percentage.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetTaskbarProgressState(System.Windows.Window,Windows7.DesktopIntegration.Windows7Taskbar.ThumbnailProgressState)">
-            <summary>
-            Sets the progress bar of this Window's taskbar button to the
-            specified state.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="state">The taskbar progress state.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.CreateProgressEnabledBackgroundWorker(System.Windows.Window)">
-            <summary>
-            Creates a background worker that dispatches progress notifications
-            to the application's taskbar button.
-            </summary>
-            <param name="form">The form.</param>
-            <returns>An instance of <see cref="T:System.ComponentModel.BackgroundWorker"/> that reports
-            progress through the application's taskbar button.</returns>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.CreateThumbButtonManager(System.Windows.Window)">
-            <summary>
-            Creates a taskbar thumbnail button manager for this Window.
-            </summary>
-            <param name="form">The form.</param>
-            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.ThumbButtonManager"/>
-            that can be used to add and manage thumbnail toolbar buttons.</returns>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.CreateJumpListManager(System.Windows.Window)">
-            <summary>
-            Creates a jump list manager for this Window.
-            </summary>
-            <param name="form">The form.</param>
-            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.JumpListManager"/>
-            that can be used to manage the application's jump list.</returns>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetThumbnailClip(System.Windows.Window,System.Drawing.Rectangle)">
-            <summary>
-            Specifies that only a portion of the form's client area
-            should be used in the form's thumbnail.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="clipRect">The rectangle that specifies the clipped region.</param>
-        </member>
-        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetThumbnailTooltip(System.Windows.Window,System.String)">
-            <summary>
-            Sets the specified form's thumbnail tooltip.
-            </summary>
-            <param name="form">The form.</param>
-            <param name="tooltip">The tooltip text.</param>
-        </member>
         <member name="T:Windows7.DesktopIntegration.ShellLibrary">
             <summary>
             This type wraps a shell library object and serves as a focal point to manage a specific library instance 
@@ -1215,42 +920,6 @@
             Get &amp; Set the folder type id
             </summary>
         </member>
-        <member name="T:Windows7.DesktopIntegration.ThumbButton">
-            <summary>
-            Represents a taskbar thumbnail button in the thumbnail toolbar.
-            </summary>
-        </member>
-        <member name="E:Windows7.DesktopIntegration.ThumbButton.Clicked">
-            <summary>
-            The event that occurs when the taskbar thumbnail button
-            is clicked.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ThumbButton.Id">
-            <summary>
-            Gets or sets thumbnail button's id.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ThumbButton.Icon">
-            <summary>
-            Gets or sets the thumbnail button's icon.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ThumbButton.Tooltip">
-            <summary>
-            Gets or sets the thumbnail button's tooltip.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ThumbButton.Visible">
-            <summary>
-            Gets or sets the thumbnail button's visibility.
-            </summary>
-        </member>
-        <member name="P:Windows7.DesktopIntegration.ThumbButton.Enabled">
-            <summary>
-            Gets or sets the thumbnail button's enabled state.
-            </summary>
-        </member>
         <member name="T:Windows7.DesktopIntegration.ThumbButtonManager">
             <summary>
             Manages a set of taskbar thumbnail buttons in an application.
@@ -1301,6 +970,337 @@
             <param name="id">The thumbnail button's id.</param>
             <returns>An object of type <see cref="T:Windows7.DesktopIntegration.ThumbButton"/>
             with the specified id.</returns>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.JumpListDestinations">
+            <summary>
+            A collection of categorized jump list destinations.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.JumpListTasks">
+            <summary>
+            A collection of jump list tasks.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.IJumpListShellObject">
+            <summary>
+            Represents a shell object that can be inserted to an application's
+            jump list.
+            </summary>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.IJumpListShellObject.GetShellRepresentation">
+            <summary>
+            Gets the shell representation of an object, such as
+            <b>IShellLink</b> or <b>IShellItem</b>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.IJumpListShellObject.Title">
+            <summary>
+            Gets or sets the object's title.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.IJumpListShellObject.Path">
+            <summary>
+            Gets or sets the object's path.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.IJumpListDestination">
+            <summary>
+            Represents a jump list destination.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.IJumpListDestination.Category">
+            <summary>
+            Gets or sets the destination's category.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.IJumpListTask">
+            <summary>
+            Represents a jump list task.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.IJumpListTask.Arguments">
+            <summary>
+            Gets or sets the task's command line arguments.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.WindowShowCommand">
+            <summary>
+            Flags controlling the appearance of a window.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Hide">
+            <summary>
+            Hides the window and activates another window.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Normal">
+            <summary>
+            Activates and displays the window (including restoring
+            it to its original size and position).
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Minimized">
+            <summary>
+            Minimizes the window.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Maximized">
+            <summary>
+            Maximizes the window.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ShowNoActivate">
+            <summary>
+            Similar to <see cref="F:Windows7.DesktopIntegration.WindowShowCommand.Normal"/>, except that the window
+            is not activated.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Show">
+            <summary>
+            Activates the window and displays it in its current size
+            and position.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Minimize">
+            <summary>
+            Minimizes the window and activates the next top-level window.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ShowMinimizedNoActivate">
+            <summary>
+            Minimizes the window and does not activate it.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ShowNA">
+            <summary>
+            Similar to <see cref="F:Windows7.DesktopIntegration.WindowShowCommand.Normal"/>, except that the window is not
+            activated.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Restore">
+            <summary>
+            Activates and displays the window, restoring it to its original
+            size and position.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.Default">
+            <summary>
+            Sets the show state based on the initial value specified when
+            the process was created.
+            </summary>
+        </member>
+        <member name="F:Windows7.DesktopIntegration.WindowShowCommand.ForceMinimize">
+            <summary>
+            Minimizes a window, even if the thread owning the window is not
+            responding.  Use this only to minimize windows from a different
+            thread.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.Separator">
+            <summary>
+            Represents a separator in the task area of the jump list.
+            There is no need to set any properties on this class.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.ShellLink">
+            <summary>
+            Represents a shell link (<b>IShellLink</b>) object.
+            </summary>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.ShellLink.GetShellRepresentation">
+            <summary>
+            Gets the shell <b>IShellLink</b> representation
+            of the object.
+            </summary>
+            <returns>An <b>IShellLink</b> up-cast to <b>object</b>.</returns>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.Title">
+            <summary>
+            Gets or sets the object's title.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.Category">
+            <summary>
+            Gets or sets the object's category.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.Path">
+            <summary>
+            Gets or sets the object's path.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.IconLocation">
+            <summary>
+            Gets or sets the location of the object's icon.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.IconIndex">
+            <summary>
+            Gets or sets the index of the object's icon in the specified
+            icon's location (<see cref="P:Windows7.DesktopIntegration.ShellLink.IconLocation"/>).
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.Arguments">
+            <summary>
+            Gets or sets the object's arguments (passed to the command
+            line).
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.WorkingDirectory">
+            <summary>
+            Gets or sets the object's working directory.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.ShowCommand">
+            <summary>
+            Gets or sets the show command of the launched application.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellLink.IsSeparator">
+            <summary>
+            Gets or sets a flag indicating that the shell link
+            is a menu separator.  If this flag is set, all other
+            properties are ignored.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.ShellItem">
+            <summary>
+            Represents a <b>IShellItem</b> object.
+            </summary>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.ShellItem.GetShellRepresentation">
+            <summary>
+            Gets the shell <b>IShellItem</b> representation
+            of the object.
+            </summary>
+            <returns>An <b>IShellItem</b> up-cast to <b>object</b>.</returns>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellItem.Category">
+            <summary>
+            Gets or sets the object's category.
+            </summary>
+        </member>
+        <member name="P:Windows7.DesktopIntegration.ShellItem.Path">
+            <summary>
+            Gets or sets the object's path.
+            </summary>
+        </member>
+        <member name="T:Windows7.DesktopIntegration.WindowsForms.WPFExtensions">
+            <summary>
+            Contains extension methods for easier Windows Forms interoperability.
+            </summary>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetAppId(System.Windows.Window,System.String)">
+            <summary>
+            Sets this Window's application id.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="appId">The application id.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.GetAppId(System.Windows.Window)">
+            <summary>
+            Gets this Window's application id.
+            </summary>
+            <param name="form">The form.</param>
+            <returns>The form's application id.</returns>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.EnableCustomWindowPreview(System.Windows.Window)">
+            <summary>
+            Enables custom window preview on this Window, meaning that
+            the DWM will send messages when a live thumbnail preview
+            or a live peek will be necessary.
+            </summary>
+            <param name="form">The form.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.DisableCustomWindowPreview(System.Windows.Window)">
+            <summary>
+            Disables custom window preview on this Window, meaning that
+            the DWM will not send messages when a live thumbnail preview
+            or a live peek will be necessary, but instead rely on its
+            default rendering.
+            </summary>
+            <param name="form">The form.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetIconicThumbnail(System.Windows.Window,System.Drawing.Bitmap)">
+            <summary>
+            Sets this Window's iconic thumbnail to the specified bitmap.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="bitmap">The bitmap.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetPeekBitmap(System.Windows.Window,System.Drawing.Bitmap,System.Boolean)">
+            <summary>
+            Sets this Window's peek (live preview) bitmap.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="bitmap">The bitmap.</param>
+            <param name="displayFrame">Whether to display a standard window
+            frame around the bitmap.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetTaskbarOverlayIcon(System.Windows.Window,System.Drawing.Icon,System.String)">
+            <summary>
+            Draws the specified overlay icon over this Window's taskbar button.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="icon">The overlay icon.</param>
+            <param name="description">The overlay icon's description.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetTaskbarProgress(System.Windows.Window,System.Single)">
+            <summary>
+            Sets the progress bar of this Window's taskbar button to the
+            specified percentage.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="percent">The progress percentage.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetTaskbarProgressState(System.Windows.Window,Windows7.DesktopIntegration.Windows7Taskbar.ThumbnailProgressState)">
+            <summary>
+            Sets the progress bar of this Window's taskbar button to the
+            specified state.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="state">The taskbar progress state.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.CreateProgressEnabledBackgroundWorker(System.Windows.Window)">
+            <summary>
+            Creates a background worker that dispatches progress notifications
+            to the application's taskbar button.
+            </summary>
+            <param name="form">The form.</param>
+            <returns>An instance of <see cref="T:System.ComponentModel.BackgroundWorker"/> that reports
+            progress through the application's taskbar button.</returns>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.CreateThumbButtonManager(System.Windows.Window)">
+            <summary>
+            Creates a taskbar thumbnail button manager for this Window.
+            </summary>
+            <param name="form">The form.</param>
+            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.ThumbButtonManager"/>
+            that can be used to add and manage thumbnail toolbar buttons.</returns>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.CreateJumpListManager(System.Windows.Window)">
+            <summary>
+            Creates a jump list manager for this Window.
+            </summary>
+            <param name="form">The form.</param>
+            <returns>An object of type <see cref="T:Windows7.DesktopIntegration.JumpListManager"/>
+            that can be used to manage the application's jump list.</returns>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetThumbnailClip(System.Windows.Window,System.Drawing.Rectangle)">
+            <summary>
+            Specifies that only a portion of the form's client area
+            should be used in the form's thumbnail.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="clipRect">The rectangle that specifies the clipped region.</param>
+        </member>
+        <member name="M:Windows7.DesktopIntegration.WindowsForms.WPFExtensions.SetThumbnailTooltip(System.Windows.Window,System.String)">
+            <summary>
+            Sets the specified form's thumbnail tooltip.
+            </summary>
+            <param name="form">The form.</param>
+            <param name="tooltip">The tooltip text.</param>
         </member>
     </members>
 </doc>

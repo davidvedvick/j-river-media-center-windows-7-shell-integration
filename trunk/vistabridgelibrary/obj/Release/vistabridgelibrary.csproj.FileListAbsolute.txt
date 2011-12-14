@@ -23,3 +23,16 @@ D:\J.-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Rele
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\VistaBridgeLibrary.pdb
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\ResGen.read.1.tlog
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\ResGen.write.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\bin\Release\VistaBridgeLibrary.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\bin\Release\VistaBridgeLibrary.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\ResolveAssemblyReference.cache
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\GeneratedInternalTypeHelper.g.cs
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\VistaBridgeLibrary_MarkupCompile.cache
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\VistaBridgeLibrary_MarkupCompile.lref
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\themes\Generic.baml
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\VistaBridgeLibrary.g.resources
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\Microsoft.SDK.Samples.VistaBridge.Properties.Resources.resources
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\ResGen.read.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\ResGen.write.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\VistaBridgeLibrary.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\vistabridgelibrary\obj\Release\VistaBridgeLibrary.pdb

@@ -39,3 +39,24 @@ D:\J.-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\MC_j
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\MC_Aero_Taskbar_Ext.MainInterface.resources
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\ResGen.read.1.tlog
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\ResGen.write.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\MC_jumpbar.dll.config
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\MC_jumpbar.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\MC_jumpbar.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\VistaBridgeLibrary.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\Windows7.DesktopIntegration.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\Windows7.DesktopIntegration.Registration.exe
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\VistaBridgeLibrary.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\VistaBridgeLibrary.xml
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\Windows7.DesktopIntegration.Registration.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\Windows7.DesktopIntegration.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\Windows7.DesktopIntegration.xml
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\Installation\Build Files\Interop.MediaCenter.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\ResolveAssemblyReference.cache
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\Interop.MediaCenter.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\MC_jumpbar.csproj.ResolveComReference.cache
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\MC_Aero_Taskbar_Ext.MainInterface.resources
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\MC_Jumpbar.Properties.Resources.resources
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\ResGen.read.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\ResGen.write.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\MC_jumpbar.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\MC_jumpbar\obj\Release\MC_jumpbar.pdb

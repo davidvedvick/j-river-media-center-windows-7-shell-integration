@@ -8,3 +8,8 @@ D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\obj\Release\ResolveAssemblyReference.cache
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\obj\Release\Windows7.DesktopIntegration.Registration.exe
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\obj\Release\Windows7.DesktopIntegration.Registration.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\bin\Release\Windows7.DesktopIntegration.Registration.exe
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\bin\Release\Windows7.DesktopIntegration.Registration.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\obj\Release\ResolveAssemblyReference.cache
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\obj\Release\Windows7.DesktopIntegration.Registration.exe
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration.Registration\obj\Release\Windows7.DesktopIntegration.Registration.pdb
