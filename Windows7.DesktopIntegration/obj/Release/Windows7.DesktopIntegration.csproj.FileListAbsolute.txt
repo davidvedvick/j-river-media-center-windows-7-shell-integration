@@ -23,3 +23,16 @@ D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\Windows7.DesktopIntegration.pdb
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\ResGen.read.1.tlog
 D:\J.-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\ResGen.write.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\bin\Release\Windows7.DesktopIntegration.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\bin\Release\Windows7.DesktopIntegration.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\bin\Release\VistaBridgeLibrary.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\bin\Release\Windows7.DesktopIntegration.Registration.exe
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\bin\Release\VistaBridgeLibrary.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\bin\Release\VistaBridgeLibrary.xml
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\bin\Release\Windows7.DesktopIntegration.Registration.pdb
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\ResolveAssemblyReference.cache
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\Windows7.DesktopIntegration.Properties.Resources.resources
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\ResGen.read.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\ResGen.write.1.tlog
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\Windows7.DesktopIntegration.dll
+D:\J-River-Media-Center-Windows-7-Shell-Integration\Windows7.DesktopIntegration\obj\Release\Windows7.DesktopIntegration.pdb

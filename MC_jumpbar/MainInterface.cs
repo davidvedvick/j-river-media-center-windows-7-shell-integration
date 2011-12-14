@@ -143,7 +143,6 @@ namespace MC_Aero_Taskbar_Ext
             //setVisibility(Panel, false);
 
             Panel.Visible = true;
-            txtUserInfo.Visible = true;
 
             return false;
         }
@@ -164,12 +163,12 @@ namespace MC_Aero_Taskbar_Ext
                 // The application ID is used to group windows together
                 //Windows7Taskbar.SetWindowAppId((IntPtr)mcRef.GetWindowHandle(), AppId);
                 //Windows7Taskbar.SetCurrentProcessAppId(AppId);
-                txtUserInfo.Visible = true;
+                //txtUserInfo.Visible = true;
+                txtUserInfo.Visible = false;
                 addUserInfoText("Plugin Initiated OK");
                 StartSubclass((IntPtr)mcRef.GetWindowHandle());
                 ScreenCapture sc = new ScreenCapture();
                 screen = new Bitmap(sc.CaptureWindow((IntPtr)mcRef.GetWindowHandle()));
-                screen.RotateFlip(RotateFlipType.Rotate180FlipX);
                 GetWindowText((IntPtr)mcRef.GetWindowHandle(), oldWindowText, oldWindowText.Capacity);
                 backgroundWorker1.RunWorkerAsync();
                                 
@@ -204,7 +203,7 @@ namespace MC_Aero_Taskbar_Ext
             addUserInfoText("The following Inner Exception was caused" + e.InnerException);
             addUserInfoText("The Stack Trace Follows:\r\n" + e.StackTrace);
 
-            txtUserInfo.Dock = DockStyle.Fill;
+            //txtUserInfo.Dock = DockStyle.Fill;
 
             this.Enabled = true;
         }
