@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace MC_Aero_Taskbar_Ext
+namespace MC_Aero_Taskbar_Plugin
 {
     /// <summary>
     /// Provides functions to capture the entire screen, or a particular window, and save it to a file.

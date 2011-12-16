@@ -16,19 +16,19 @@ using System.Design;
 using MediaCenter;
 using System.Drawing.Drawing2D;
 using Windows7.DesktopIntegration.WindowsForms;
-using MC_Jumpbar.Properties;
+using MC_Aero_Taskbar_Plugin.Properties;
 using System.Threading;
 using System.Diagnostics;
 using System.Drawing.Imaging;
-using MC_Aero_Taskbar_Ext;
+using MC_Aero_Taskbar_Plugin;
 #endregion
 
-namespace MC_Aero_Taskbar_Ext
+namespace MC_Aero_Taskbar_Plugin
 {
     #region Interop Program ID Registration
 
     // This string must unique and match the String in the Inno Setup Script
-    [System.Runtime.InteropServices.ProgId("MCPlugin.MC_jumpbar")]
+    [System.Runtime.InteropServices.ProgId("MCPlugin.MC_Aero_Taskbar_Plugin")]
     #endregion
 
     public partial class MainInterface : UserControl
@@ -430,7 +430,7 @@ namespace MC_Aero_Taskbar_Ext
         private bool generateWindowsPeak = false;
         private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
         {
-            if (enableCoverArt.Checked) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+            if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
             else Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
             //addUserInfoText(Msg.ToString());
             switch (Msg)
@@ -567,7 +567,7 @@ namespace MC_Aero_Taskbar_Ext
                     System.Threading.Thread.Sleep(100);
                     GC.Collect();
                 }
-                //Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+                Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
                 Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.NoProgress);
             }
             catch (Exception ex)
