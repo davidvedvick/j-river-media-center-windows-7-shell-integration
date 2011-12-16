@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -8,8 +8,8 @@
     <ProjectGuid>{AF0C732C-3E35-43C2-BA06-743EEA0EAE45}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MC_Jumpbar</RootNamespace>
-    <AssemblyName>MC_jumpbar</AssemblyName>
+    <RootNamespace>MC_Aero_Taskbar_Plugin</RootNamespace>
+    <AssemblyName>MC_Aero_Taskbar_Plugin</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

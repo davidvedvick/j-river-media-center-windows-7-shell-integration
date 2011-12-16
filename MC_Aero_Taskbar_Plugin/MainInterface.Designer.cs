@@ -1,4 +1,4 @@
-namespace MC_Aero_Taskbar_Ext
+namespace MC_Aero_Taskbar_Plugin
 {
     partial class MainInterface
     {
