@@ -29,13 +29,13 @@ namespace MC_Aero_Taskbar_Plugin
         private void InitializeComponent()
         {
             this.Panel = new System.Windows.Forms.Panel();
+            this.txtUserInfo = new System.Windows.Forms.TextBox();
             this.displayArtistTrackName = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.noProgressTrack = new System.Windows.Forms.RadioButton();
             this.playlistProgress = new System.Windows.Forms.RadioButton();
             this.trackProgress = new System.Windows.Forms.RadioButton();
             this.enableCoverArt = new System.Windows.Forms.CheckBox();
-            this.txtUserInfo = new System.Windows.Forms.TextBox();
             this.BottomToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.TopToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
@@ -43,7 +43,6 @@ namespace MC_Aero_Taskbar_Plugin
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             this.Panel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.mainPanel.SuspendLayout();
@@ -63,6 +62,17 @@ namespace MC_Aero_Taskbar_Plugin
             this.Panel.Size = new System.Drawing.Size(886, 417);
             this.Panel.TabIndex = 0;
             this.Panel.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel_Paint);
+            // 
+            // txtUserInfo
+            // 
+            this.txtUserInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.txtUserInfo.Location = new System.Drawing.Point(0, 246);
+            this.txtUserInfo.Multiline = true;
+            this.txtUserInfo.Name = "txtUserInfo";
+            this.txtUserInfo.ReadOnly = true;
+            this.txtUserInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtUserInfo.Size = new System.Drawing.Size(886, 171);
+            this.txtUserInfo.TabIndex = 0;
             // 
             // displayArtistTrackName
             // 
@@ -131,17 +141,6 @@ namespace MC_Aero_Taskbar_Plugin
             this.enableCoverArt.Text = "Enable Cover Art Thumbnail (Buggy)";
             this.enableCoverArt.UseVisualStyleBackColor = true;
             this.enableCoverArt.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_1);
-            // 
-            // txtUserInfo
-            // 
-            this.txtUserInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtUserInfo.Location = new System.Drawing.Point(0, 246);
-            this.txtUserInfo.Multiline = true;
-            this.txtUserInfo.Name = "txtUserInfo";
-            this.txtUserInfo.ReadOnly = true;
-            this.txtUserInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtUserInfo.Size = new System.Drawing.Size(886, 171);
-            this.txtUserInfo.TabIndex = 0;
             // 
             // BottomToolStripPanel
             // 
@@ -222,7 +221,6 @@ namespace MC_Aero_Taskbar_Plugin
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.TextBox txtUserInfo;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker2;
         private System.Windows.Forms.CheckBox enableCoverArt;
         private System.Windows.Forms.RadioButton trackProgress;
         private System.Windows.Forms.RadioButton playlistProgress;

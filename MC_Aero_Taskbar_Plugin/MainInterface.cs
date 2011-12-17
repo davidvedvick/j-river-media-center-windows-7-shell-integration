@@ -21,6 +21,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using MC_Aero_Taskbar_Plugin;
+using Microsoft.WindowsAPICodePack;
 #endregion
 
 namespace MC_Aero_Taskbar_Plugin
@@ -165,7 +166,7 @@ namespace MC_Aero_Taskbar_Plugin
                 //Windows7Taskbar.SetWindowAppId((IntPtr)mcRef.GetWindowHandle(), AppId);
                 //Windows7Taskbar.SetCurrentProcessAppId(AppId);
                 //txtUserInfo.Visible = true;
-                txtUserInfo.Visible = false;
+                txtUserInfo.Visible = true;
                 addUserInfoText("Plugin Initiated OK");
                 StartSubclass((IntPtr)mcRef.GetWindowHandle());
                 ScreenCapture sc = new ScreenCapture();
@@ -176,7 +177,7 @@ namespace MC_Aero_Taskbar_Plugin
             }
             catch (Exception e)
             {
-                errorHandler(e);
+                exceptionHandler(e);
             }
         }
 
@@ -189,14 +190,14 @@ namespace MC_Aero_Taskbar_Plugin
             }
             catch (Exception e)
             {
-                errorHandler(e);
+                exceptionHandler(e);
             }
         }
 
         #endregion
 
         #region ErrorHandler
-        private void errorHandler(Exception e)
+        private void exceptionHandler(Exception e)
         {
             addUserInfoText("A Fatal error has occured: " + e.Message);
             addUserInfoText("The Failure Occured In Class Object: " + e.Source);
@@ -222,7 +223,7 @@ namespace MC_Aero_Taskbar_Plugin
             }
             catch (Exception e)
             {
-                errorHandler(e);
+                exceptionHandler(e);
             }
         }
 
@@ -255,7 +256,7 @@ namespace MC_Aero_Taskbar_Plugin
             }
             catch (Exception e)
             {
-                errorHandler(e);
+                exceptionHandler(e);
             }
 
             return colReturned;
@@ -308,7 +309,7 @@ namespace MC_Aero_Taskbar_Plugin
             }
             catch (Exception e)
             {
-                errorHandler(e);
+                exceptionHandler(e);
             }
         }
 
@@ -428,7 +429,7 @@ namespace MC_Aero_Taskbar_Plugin
         {
             if (oldWndProc.ToInt32() != 0) SetWindowLong(hWnd, GWL_WNDPROC, oldWndProc);
         }
-        private bool generateWindowsPeak = false;
+        
         private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
         {
             if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
@@ -571,7 +572,7 @@ namespace MC_Aero_Taskbar_Plugin
             }
             catch (Exception ex)
             {
-                errorHandler(ex);
+                exceptionHandler(ex);
             }
             return; 
         }
@@ -599,15 +600,28 @@ namespace MC_Aero_Taskbar_Plugin
             }
         }
 
+        [DllImport("dwmapi.dll", PreserveSig = false)]
+        public static extern void DwmQueryThumbnailSourceSize(IntPtr hThumbnail, out Size size);
+
         private void setPreview(string currentFile)
         {
-            if (!string.IsNullOrEmpty(currentFile))
+            try
             {
-                using (Image coverArt = Image.FromFile(currentFile))
+                if (!string.IsNullOrEmpty(currentFile))
                 {
-                    Windows7Taskbar.SetIconicThumbnail((IntPtr)mcRef.GetWindowHandle(), (Bitmap)coverArt.GetThumbnailImage(120, 120, null, IntPtr.Zero));
+                    using (Image coverArt = Image.FromFile(currentFile))
+                    {
+                        Size thumbSize = new Size();
+                        //DwmQueryThumbnailSourceSize((IntPtr)mcRef.GetWindowHandle(), out thumbSize);
+                        addUserInfoText(thumbSize.ToString());
+                        Windows7Taskbar.SetIconicThumbnail((IntPtr)mcRef.GetWindowHandle(), (Bitmap)coverArt.GetThumbnailImage(thumbSize.Width, thumbSize.Height, null, IntPtr.Zero));
+                    }
+                    return;
                 }
-                return;
+            }
+            catch (Exception ex)
+            {
+                exceptionHandler(ex);
             }
         }
 
