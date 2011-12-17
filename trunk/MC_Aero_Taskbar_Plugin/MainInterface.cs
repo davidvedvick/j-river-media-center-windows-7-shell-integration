@@ -151,7 +151,8 @@ namespace MC_Aero_Taskbar_Plugin
         {
             try
             {
-
+                // Add buffered graphics possibly
+                
                 //if (checkVersion())
                 //{
                     // Tell MC to call our MJEvent Routine in case of evenst
@@ -514,8 +515,8 @@ namespace MC_Aero_Taskbar_Plugin
             //IMJFileAutomation nowPlayingFile;
             //nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
 
-            string prevFile = "";
-            string currentFile = "";
+            string prevFileName = "";
+            
             try
             {
                 while (playback.State != MJPlaybackStates.PLAYSTATE_STOPPED)
@@ -526,16 +527,14 @@ namespace MC_Aero_Taskbar_Plugin
                     
                     if (enableCoverArt.Checked)
                     {
-                        currentFile = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
-                        if (!string.IsNullOrEmpty(currentFile))
+                        if (nowPlayingFile.Name != prevFileName)
                         {
-                            if (currentFile != prevFile)
-                            {
-                                setPreview(currentFile);
-                            }
+                            string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
+
+                            if (!string.IsNullOrEmpty(imageFileName)) setPreview(imageFileName);
                         }
 
-                        prevFile = currentFile;
+                        prevFileName = nowPlayingFile.Name;
                     }
 
                     if (trackProgress.Checked)
@@ -564,8 +563,8 @@ namespace MC_Aero_Taskbar_Plugin
                         Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.NoProgress);
                     }
                     setWindowTitle(nowPlayingFile);
-                    System.Threading.Thread.Sleep(100);
-                    GC.Collect();
+                    System.Threading.Thread.Sleep(250);
+                    
                 }
                 Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
                 Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.NoProgress);
@@ -583,6 +582,7 @@ namespace MC_Aero_Taskbar_Plugin
             {
                 GetWindowRect((IntPtr)mcRef.GetWindowHandle(), ref windowsize);
                 ScreenCapture sc = new ScreenCapture();
+                screen.Dispose();
                 screen = new Bitmap(sc.CaptureWindow((IntPtr)mcRef.GetWindowHandle()));
             }
             
@@ -597,9 +597,6 @@ namespace MC_Aero_Taskbar_Plugin
                     addUserInfoText(e.Message);
                 }
             }
-            
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
         }
 
         private void setPreview(string currentFile)
