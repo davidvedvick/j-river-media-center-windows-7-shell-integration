@@ -21,7 +21,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using MC_Aero_Taskbar_Plugin;
-using Microsoft.WindowsAPICodePack;
+//using Microsoft.WindowsAPICodePack;
 #endregion
 
 namespace MC_Aero_Taskbar_Plugin
