@@ -340,6 +340,8 @@ namespace MC_Aero_Taskbar_Plugin
                     {
                         case "MCC: NOTIFY_TRACK_CHANGE":
                         case "MCC: NOTIFY_PLAYERSTATE_CHANGE":
+                            StopSubclass((IntPtr)mcRef.GetWindowHandle());
+                            StartSubclass((IntPtr)mcRef.GetWindowHandle());
                             backgroundWorker1.RunWorkerAsync();
                             break;
 
@@ -433,8 +435,8 @@ namespace MC_Aero_Taskbar_Plugin
         
         private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
         {
-            //if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-            //else Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+            if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+            else Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
             //addUserInfoText(Msg.ToString());
             switch (Msg)
             {
@@ -528,20 +530,25 @@ namespace MC_Aero_Taskbar_Plugin
                 {
                     nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
                     //addUserInfoText("Playback state: " + playback.State);
-
                     
-                    if (enableCoverArt.Checked)
-                    {
-                        Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-                        if (nowPlayingFile.Name != prevFileName)
-                        {
-                            string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
+                    //if (enableCoverArt.Checked)
+                    //{
+                        //Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+                        //if (nowPlayingFile.Name != prevFileName)
+                        //{
+                        //    string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM) ?? nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
 
-                            if (!string.IsNullOrEmpty(imageFileName)) setPreview(imageFileName);
-                        }
+                        //    if (!string.IsNullOrEmpty(imageFileName))
+                        //    {
+                        //        setPreview(imageFileName);
+                        //        setWindowsPeak();
+                        //    }
+                        //}
 
                         prevFileName = nowPlayingFile.Name;
-                    }
+                    //}
+                    //else
+                    //    Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
 
                     if (trackProgress.Checked)
                     {
