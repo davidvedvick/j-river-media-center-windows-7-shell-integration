@@ -531,24 +531,24 @@ namespace MC_Aero_Taskbar_Plugin
                     nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
                     //addUserInfoText("Playback state: " + playback.State);
                     
-                    //if (enableCoverArt.Checked)
-                    //{
-                        //Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-                        //if (nowPlayingFile.Name != prevFileName)
-                        //{
-                        //    string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM) ?? nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
+                    if (enableCoverArt.Checked)
+                    {
+                        Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+                        if (nowPlayingFile.Name != prevFileName)
+                        {
+                            string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM) ?? nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
 
-                        //    if (!string.IsNullOrEmpty(imageFileName))
-                        //    {
-                        //        setPreview(imageFileName);
-                        //        setWindowsPeak();
-                        //    }
-                        //}
+                            if (!string.IsNullOrEmpty(imageFileName))
+                            {
+                                setPreview(imageFileName);
+                                setWindowsPeak();
+                            }
+                        }
 
                         prevFileName = nowPlayingFile.Name;
-                    //}
-                    //else
-                    //    Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+                    }
+                    else
+                        Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
 
                     if (trackProgress.Checked)
                     {
