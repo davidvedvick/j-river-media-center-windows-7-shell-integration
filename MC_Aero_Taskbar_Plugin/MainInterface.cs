@@ -47,6 +47,7 @@ namespace MC_Aero_Taskbar_Plugin
         private IMJFileAutomation nowPlayingFile;
         private IMJPlaybackAutomation playback;
         private Settings s = new Settings();
+        private Size thumbnailSize = new Size(120, 120);
 
         #endregion
 
@@ -432,8 +433,8 @@ namespace MC_Aero_Taskbar_Plugin
         
         private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
         {
-            if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-            else Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+            //if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+            //else Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
             //addUserInfoText(Msg.ToString());
             switch (Msg)
             {
@@ -454,11 +455,14 @@ namespace MC_Aero_Taskbar_Plugin
                     return 0;
                     //break;
                 case WM_DWMSENDICONICTHUMBNAIL:
-                    //addUserInfoText("Case Inconic Thumbnail");
-                    //if (nowPlayingFile == null) nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
-                    
-                    //addUserInfoText("Displaying Thumbnail");
-                    //setPreview();
+                    string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
+                    //addUserInfoText(imageFileName);
+                    int width = (int)((long)lParam >> 16);
+                    int height = (int)(((long)lParam) & (0xFFFF));
+                    thumbnailSize = new Size(width, height);
+                    addUserInfoText(thumbnailSize.ToString());
+                    if (!string.IsNullOrEmpty(imageFileName)) setPreview(imageFileName);
+                    //imageFileName = "";
                     return 0;
                     //break;
                 default:
@@ -528,9 +532,10 @@ namespace MC_Aero_Taskbar_Plugin
                     
                     if (enableCoverArt.Checked)
                     {
+                        Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
                         if (nowPlayingFile.Name != prevFileName)
                         {
-                            string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
+                            string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
 
                             if (!string.IsNullOrEmpty(imageFileName)) setPreview(imageFileName);
                         }
@@ -609,20 +614,48 @@ namespace MC_Aero_Taskbar_Plugin
             {
                 if (!string.IsNullOrEmpty(currentFile))
                 {
-                    using (Image coverArt = Image.FromFile(currentFile))
-                    {
-                        Size thumbSize = new Size();
-                        //DwmQueryThumbnailSourceSize((IntPtr)mcRef.GetWindowHandle(), out thumbSize);
-                        addUserInfoText(thumbSize.ToString());
-                        Windows7Taskbar.SetIconicThumbnail((IntPtr)mcRef.GetWindowHandle(), (Bitmap)coverArt.GetThumbnailImage(thumbSize.Width, thumbSize.Height, null, IntPtr.Zero));
-                    }
-                    return;
+                    Image coverArt = Image.FromFile(currentFile);
+                    
+                    
+                    addUserInfoText("getting image thumbnail at: " + currentFile);
+                    Bitmap coverArtFile = resizeImage(coverArt, thumbnailSize);
+                    addUserInfoText(coverArtFile.ToString());
+                    Windows7Taskbar.SetIconicThumbnail((IntPtr)mcRef.GetWindowHandle(), coverArtFile);
                 }
             }
             catch (Exception ex)
             {
                 exceptionHandler(ex);
             }
+        }
+        private static Bitmap resizeImage(Image imgToResize, Size size)
+        {
+            int sourceWidth = imgToResize.Width;
+            int sourceHeight = imgToResize.Height;
+
+            float nPercent = 0;
+            float nPercentW = 0;
+            float nPercentH = 0;
+
+            nPercentW = ((float)size.Width / (float)sourceWidth);
+            nPercentH = ((float)size.Height / (float)sourceHeight);
+
+            if (nPercentH < nPercentW)
+                nPercent = nPercentH;
+            else
+                nPercent = nPercentW;
+
+            int destWidth = (int)(sourceWidth * nPercent);
+            int destHeight = (int)(sourceHeight * nPercent);
+
+            Bitmap b = new Bitmap(destWidth, destHeight);
+            Graphics g = Graphics.FromImage((Image)b);
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+            g.DrawImage(imgToResize, 0, 0, destWidth, destHeight);
+            g.Dispose();
+
+            return b;
         }
 
         private void Panel_Paint(object sender, PaintEventArgs e)

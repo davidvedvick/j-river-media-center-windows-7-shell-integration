@@ -168,7 +168,11 @@ namespace Windows7.DesktopIntegration
         /// <param name="bitmap">The thumbnail bitmap.</param>
         public static void SetIconicThumbnail(IntPtr hwnd, Bitmap bitmap)
         {
-            int rc = UnsafeNativeMethods.DwmSetIconicThumbnail(
+            int rc = 0;
+            rc = UnsafeNativeMethods.DwmInvalidateIconicBitmaps(hwnd);
+            if (rc != 0)
+                throw Marshal.GetExceptionForHR(rc);
+            rc = UnsafeNativeMethods.DwmSetIconicThumbnail(
                 hwnd,
                 bitmap.GetHbitmap(),
                 SafeNativeMethods.DWM_SIT_DISPLAYFRAME);
@@ -185,7 +189,11 @@ namespace Windows7.DesktopIntegration
         /// frame around the bitmap.</param>
         public static void SetPeekBitmap(IntPtr hwnd, Bitmap bitmap, bool displayFrame)
         {
-            int rc = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(
+            int rc = 0;
+            rc = UnsafeNativeMethods.DwmInvalidateIconicBitmaps(hwnd);
+            if (rc != 0)
+                throw Marshal.GetExceptionForHR(rc);
+            rc = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(
                 hwnd,
                 bitmap.GetHbitmap(),
                 IntPtr.Zero,

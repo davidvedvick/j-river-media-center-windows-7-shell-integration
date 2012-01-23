@@ -57,8 +57,6 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
