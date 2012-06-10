@@ -522,7 +522,7 @@ namespace MC_Aero_Taskbar_Plugin
         private void setThumbnail(string currentFile)
         {
             // Can't imagine a thumnbail having much smaller size than this.
-            setThumbnail(currentFile, new Size(1, 1));
+            setThumbnail(currentFile, new Size(0, 0));
         }
 
         private void setThumbnail(string currentFile, Size thumbnailSize)
