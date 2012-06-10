@@ -106,6 +106,8 @@ namespace Windows7.DesktopIntegration
     /// </summary>
     public sealed class CustomWindowsManager
     {
+        private static Bitmap WindowsPeak;
+        private bool IsMinimized = false;
         /// <summary>
         /// Creates a new instance of this class from the specified
         /// window handle.
@@ -138,7 +140,7 @@ namespace Windows7.DesktopIntegration
             Windows7Taskbar.TaskbarList.RegisterTab(proxy.Handle, parentHwnd);
             Windows7Taskbar.TaskbarList.SetTabOrder(proxy.Handle, IntPtr.Zero);
             Windows7Taskbar.TaskbarList.ActivateTab(proxy.Handle);
-            
+
             return new CustomWindowsManager(proxy, parentHwnd);
             
             //TODO: Think about ordering
@@ -165,7 +167,7 @@ namespace Windows7.DesktopIntegration
             _hwndParent = hwndParent;
             _proxyWindow = proxy;//Just keep it alive
             _proxyWindow.WindowsManager = this;
-
+            UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_DWMSENDICONICTHUMBNAIL, SafeNativeMethods.MSGFLT_ADD);
             Windows7Taskbar.EnableCustomWindowPreview(WindowToTellDwmAbout);
         }
 
@@ -243,112 +245,136 @@ namespace Windows7.DesktopIntegration
         /// from a Windows Forms or WPF window procedure.</param>
         public void DispatchMessage(ref Message m)
         {
-            if (m.Msg == SafeNativeMethods.WM_ACTIVATE && _hwndParent != IntPtr.Zero)
+            Size clientSize;
+            BitmapRequestedEventArgs b;
+            switch (m.Msg)
             {
-                if (((int)m.WParam) == SafeNativeMethods.WA_ACTIVE ||
-                    ((int)m.WParam) == SafeNativeMethods.WA_CLICKACTIVE)
-                {
-                    VistaBridgeInterop.UnsafeNativeMethods.SendMessage(
-                        _hwnd, (uint)m.Msg, m.WParam, m.LParam);
+                case (SafeNativeMethods.WM_ACTIVATE):
+                    if (_hwndParent == IntPtr.Zero) break;
 
-                    //TODO: Technically, we should also test if the child
-                    //isn't visible.  If it is, no need to send the message.
-                }
-            }
-            if (m.Msg == SafeNativeMethods.WM_SYSCOMMAND && _hwndParent != IntPtr.Zero)
-            {
-                if (((int)m.WParam) == SafeNativeMethods.SC_CLOSE)
-                {
-                    VistaBridgeInterop.UnsafeNativeMethods.SendMessage(
-                        _hwnd, SafeNativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-                    WindowClosed();
-                }
-            }
-            if (m.Msg == SafeNativeMethods.WM_DWMSENDICONICTHUMBNAIL)
-            {
-                int width = (int)(((long)m.LParam) >> 16);
-                int height = (int)(((long)m.LParam) & (0xFFFF));
-
-                BitmapRequestedEventArgs b = new BitmapRequestedEventArgs(width, height, true);
-                ThumbnailRequested(this, b);
-
-                if (b.UseWindowScreenshot)
-                {
-                    //The actual application window might scale pretty badly
-                    //with these parameters.  Note that the following
-                    //scaling is still not as good as what DWM does on
-                    //its own, because by default it will take the window
-                    //dimensions in consideration.  When using custom
-                    //preview, DWM gives us default window dimensions
-                    //instead of taking the window dimensions in consideration.
-
-                    Size clientSize;
-                    UnsafeNativeMethods.GetClientSize(_hwnd, out clientSize);
-
-                    float thumbnailAspect = ((float)width) / height;
-                    float windowAspect = ((float)clientSize.Width) / clientSize.Height;
-
-                    if (windowAspect > thumbnailAspect)
+                    if (((int)m.WParam) == SafeNativeMethods.WA_ACTIVE ||
+                        ((int)m.WParam) == SafeNativeMethods.WA_CLICKACTIVE)
                     {
-                        //Wider than the thumbnail, make the thumbnail height smaller:
-                        height = (int)(height * (thumbnailAspect / windowAspect));
+                        VistaBridgeInterop.UnsafeNativeMethods.SendMessage(
+                            _hwnd, (uint)m.Msg, m.WParam, m.LParam);
+
+                        //TODO: Technically, we should also test if the child
+                        //isn't visible.  If it is, no need to send the message.
                     }
-                    if (windowAspect < thumbnailAspect)
+                    break;
+                case (SafeNativeMethods.WM_SYSCOMMAND):
+                    switch ((int)m.WParam)
                     {
-                        //The thumbnail is wider, make the width smaller:
-                        width = (int)(width * (windowAspect / thumbnailAspect));
+                        case SafeNativeMethods.SC_MINIMIZE:
+                            IsMinimized = true;
+                            if (WindowsPeak == null) DisablePreview();
+                            break;
+                        case SafeNativeMethods.SC_RESTORE:
+                            IsMinimized = false;
+                            if (WindowsPeak != null) WindowsPeak.Dispose();
+                            if (!UnsafeNativeMethods.GetClientSize(_hwnd, out clientSize))
+                            {
+                                clientSize = new Size(50, 50);//Best guess
+                            }
+                            WindowsPeak = ScreenCapture.GrabWindowBitmap(_hwnd, clientSize);
+                            WindowsPeak.RotateFlip(RotateFlipType.Rotate180FlipX);
+                            break;
+                        case SafeNativeMethods.SC_CLOSE:
+                            if (_hwndParent == IntPtr.Zero) break;
+                            VistaBridgeInterop.UnsafeNativeMethods.SendMessage(
+                            _hwnd, SafeNativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                            WindowClosed();
+                            break;
                     }
 
-                    b.Bitmap = ScreenCapture.GrabWindowBitmap(_hwnd, new Size(width, height));
-                    
-                }
-                else if (!b.DoNotMirrorBitmap)
-                {
-                    b.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                }
+                    break;
+                case (SafeNativeMethods.WM_DWMSENDICONICTHUMBNAIL):
+                    int width = (int)(((long)m.LParam) >> 16);
+                    int height = (int)(((long)m.LParam) & (0xFFFF));
 
-                Windows7Taskbar.SetIconicThumbnail(WindowToTellDwmAbout, b.Bitmap);
-                b.Bitmap.Dispose();
+                    b = new BitmapRequestedEventArgs(width, height, true);
+                    ThumbnailRequested(this, b);
+
+                    if (b.UseWindowScreenshot)
+                    {
+                        //The actual application window might scale pretty badly
+                        //with these parameters.  Note that the following
+                        //scaling is still not as good as what DWM does on
+                        //its own, because by default it will take the window
+                        //dimensions in consideration.  When using custom
+                        //preview, DWM gives us default window dimensions
+                        //instead of taking the window dimensions in consideration.
+
+                        UnsafeNativeMethods.GetClientSize(_hwnd, out clientSize);
+
+                        float thumbnailAspect = ((float)width) / height;
+                        float windowAspect = ((float)clientSize.Width) / clientSize.Height;
+
+                        if (windowAspect > thumbnailAspect)
+                        {
+                            //Wider than the thumbnail, make the thumbnail height smaller:
+                            height = (int)(height * (thumbnailAspect / windowAspect));
+                        }
+                        if (windowAspect < thumbnailAspect)
+                        {
+                            //The thumbnail is wider, make the width smaller:
+                            width = (int)(width * (windowAspect / thumbnailAspect));
+                        }
+
+                        b.Bitmap = ScreenCapture.GrabWindowBitmap(_hwnd, new Size(width, height));
+
+                    }
+                    else if (!b.DoNotMirrorBitmap)
+                    {
+                        b.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    }
+
+                    Windows7Taskbar.SetIconicThumbnail(WindowToTellDwmAbout, b.Bitmap);
+                    b.Bitmap.Dispose();
+                    break;
+
+                case (SafeNativeMethods.WM_DWMSENDICONICLIVEPREVIEWBITMAP):                    
+                    if (!UnsafeNativeMethods.GetClientSize(_hwnd, out clientSize))
+                    {
+                        clientSize = new Size(50, 50);//Best guess
+                    }
+
+                    b = new BitmapRequestedEventArgs(
+                        clientSize.Width, clientSize.Height, _hwndParent == IntPtr.Zero);
+                    PeekRequested(this, b);
+
+                    if (IsMinimized && WindowsPeak != null)
+                    {
+                        b.Bitmap = (Bitmap)WindowsPeak.Clone();
+                        b.UseWindowScreenshot = false;
+                        b.DoNotMirrorBitmap = true;
+                    }
+
+                    if (b.UseWindowScreenshot)
+                    {
+                        b.Bitmap = ScreenCapture.GrabWindowBitmap(_hwnd, clientSize);
+                        b.Bitmap.RotateFlip(RotateFlipType.Rotate180FlipX);
+                    }
+                    else if (!b.DoNotMirrorBitmap)
+                    {
+                        b.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    }
+
+                    if (_hwndParent != IntPtr.Zero)
+                    {
+                        Point offset = WindowUtilities.GetParentOffsetOfChild(_hwnd, _hwndParent);
+                        Windows7Taskbar.SetPeekBitmap(WindowToTellDwmAbout, b.Bitmap, offset, b.DisplayFrameAroundBitmap);
+                    }
+                    else
+                    {
+                        Windows7Taskbar.SetPeekBitmap(WindowToTellDwmAbout, b.Bitmap, b.DisplayFrameAroundBitmap);
+                    }
+                    // save the bitmap in case the window is minimized.
+                    if (WindowsPeak != null) WindowsPeak.Dispose();
+                    WindowsPeak = (Bitmap)b.Bitmap.Clone();
+                    b.Bitmap.Dispose();
+                    break;
             }
-            else if (m.Msg == SafeNativeMethods.WM_DWMSENDICONICLIVEPREVIEWBITMAP)
-            {
-                Size clientSize;
-                if (!UnsafeNativeMethods.GetClientSize(_hwnd, out clientSize))
-                {
-                    clientSize = new Size(50,50);//Best guess
-                }
-
-                BitmapRequestedEventArgs b = new BitmapRequestedEventArgs(
-                    clientSize.Width, clientSize.Height, _hwndParent == IntPtr.Zero);
-                PeekRequested(this, b);
-
-                if (b.UseWindowScreenshot)
-                {
-                    b.Bitmap = ScreenCapture.GrabWindowBitmap(_hwnd, clientSize);
-                    b.Bitmap.RotateFlip(RotateFlipType.Rotate180FlipX);
-                }
-                else if (!b.DoNotMirrorBitmap)
-                {
-                    b.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                }
-                //using (MemoryStream ms = new MemoryStream()) // estimatedLength can be original fileLength
-                //{
-                //    b.Bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp); // save image to stream in Jpeg format
-                //    GC.AddMemoryPressure(ms.Length);
-                //}
-                if (_hwndParent != IntPtr.Zero)
-                {
-                    Point offset = WindowUtilities.GetParentOffsetOfChild(_hwnd, _hwndParent);
-                    Windows7Taskbar.SetPeekBitmap(WindowToTellDwmAbout, b.Bitmap, offset, b.DisplayFrameAroundBitmap);
-                }
-                else
-                {
-                    Windows7Taskbar.SetPeekBitmap(WindowToTellDwmAbout, b.Bitmap, b.DisplayFrameAroundBitmap);
-                }
-
-                b.Bitmap.Dispose();
-            }
-            
         }
     }
 

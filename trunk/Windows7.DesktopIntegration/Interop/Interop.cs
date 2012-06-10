@@ -232,6 +232,8 @@ namespace Windows7.DesktopIntegration.Interop
         public const int WA_CLICKACTIVE = 2;
 
         public const int SC_CLOSE = 0xF060;
+        public const int SC_MINIMIZE = 0xF020;
+        public const int SC_RESTORE = 0xF120;
 
         public const int MSGFLT_ADD = 1;
         public const int MSGFLT_REMOVE = 2;

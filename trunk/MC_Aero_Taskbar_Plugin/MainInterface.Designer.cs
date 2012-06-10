@@ -29,6 +29,7 @@ namespace MC_Aero_Taskbar_Plugin
         private void InitializeComponent()
         {
             this.Panel = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.txtUserInfo = new System.Windows.Forms.TextBox();
             this.displayArtistTrackName = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -52,26 +53,37 @@ namespace MC_Aero_Taskbar_Plugin
             this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.Controls.Add(this.label1);
             this.Panel.Controls.Add(this.txtUserInfo);
             this.Panel.Controls.Add(this.displayArtistTrackName);
             this.Panel.Controls.Add(this.groupBox1);
             this.Panel.Controls.Add(this.enableCoverArt);
             this.Panel.Location = new System.Drawing.Point(0, 0);
             this.Panel.Name = "Panel";
-            this.Panel.Size = new System.Drawing.Size(886, 417);
+            this.Panel.Size = new System.Drawing.Size(886, 594);
             this.Panel.TabIndex = 0;
             this.Panel.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel_Paint);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(14, 231);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(280, 13);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "* Some Options will not take effect until the track changes";
             // 
             // txtUserInfo
             // 
             this.txtUserInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtUserInfo.Location = new System.Drawing.Point(0, 246);
+            this.txtUserInfo.Location = new System.Drawing.Point(0, 520);
             this.txtUserInfo.Multiline = true;
             this.txtUserInfo.Name = "txtUserInfo";
             this.txtUserInfo.ReadOnly = true;
             this.txtUserInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtUserInfo.Size = new System.Drawing.Size(886, 171);
+            this.txtUserInfo.Size = new System.Drawing.Size(886, 74);
             this.txtUserInfo.TabIndex = 0;
+            this.txtUserInfo.Visible = false;
             // 
             // displayArtistTrackName
             // 
@@ -135,9 +147,9 @@ namespace MC_Aero_Taskbar_Plugin
             this.enableCoverArt.AutoSize = true;
             this.enableCoverArt.Location = new System.Drawing.Point(20, 13);
             this.enableCoverArt.Name = "enableCoverArt";
-            this.enableCoverArt.Size = new System.Drawing.Size(197, 17);
+            this.enableCoverArt.Size = new System.Drawing.Size(158, 17);
             this.enableCoverArt.TabIndex = 4;
-            this.enableCoverArt.Text = "Enable Cover Art Thumbnail (Buggy)";
+            this.enableCoverArt.Text = "Enable Cover Art Thumbnail";
             this.enableCoverArt.UseVisualStyleBackColor = true;
             this.enableCoverArt.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_1);
             // 
@@ -214,13 +226,14 @@ namespace MC_Aero_Taskbar_Plugin
         private System.Windows.Forms.ToolStripPanel LeftToolStripPanel;
         private System.Windows.Forms.ToolStripContentPanel ContentPanel;
         private System.Windows.Forms.Panel mainPanel;
-        private System.Windows.Forms.TextBox txtUserInfo;
         private System.Windows.Forms.CheckBox enableCoverArt;
         private System.Windows.Forms.RadioButton trackProgress;
         private System.Windows.Forms.RadioButton playlistProgress;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox displayArtistTrackName;
         private System.Windows.Forms.RadioButton noProgressTrack;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtUserInfo;
 
     }
 }
