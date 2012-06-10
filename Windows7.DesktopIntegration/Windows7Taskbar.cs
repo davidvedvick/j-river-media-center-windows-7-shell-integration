@@ -169,15 +169,18 @@ namespace Windows7.DesktopIntegration
         public static void SetIconicThumbnail(IntPtr hwnd, Bitmap bitmap)
         {
             int rc = 0;
+            IntPtr hb = bitmap.GetHbitmap();
             rc = UnsafeNativeMethods.DwmInvalidateIconicBitmaps(hwnd);
             if (rc != 0)
                 throw Marshal.GetExceptionForHR(rc);
             rc = UnsafeNativeMethods.DwmSetIconicThumbnail(
                 hwnd,
-                bitmap.GetHbitmap(),
+                hb,
                 SafeNativeMethods.DWM_SIT_DISPLAYFRAME);
             if (rc != 0)
                 throw Marshal.GetExceptionForHR(rc);
+
+            GDI32.DeleteObject(hb);
         }
         /// <summary>
         /// Sets the specified peek (live preview) bitmap for the specified
@@ -189,19 +192,16 @@ namespace Windows7.DesktopIntegration
         /// frame around the bitmap.</param>
         public static void SetPeekBitmap(IntPtr hwnd, Bitmap bitmap, bool displayFrame)
         {
-            int rc = 0;
-            rc = UnsafeNativeMethods.DwmInvalidateIconicBitmaps(hwnd);
-            if (rc != 0)
-                throw Marshal.GetExceptionForHR(rc);
-            rc = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(
+            IntPtr hb = bitmap.GetHbitmap();
+            int rc = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(
                 hwnd,
-                bitmap.GetHbitmap(),
+                hb,
                 IntPtr.Zero,
                 displayFrame ? SafeNativeMethods.DWM_SIT_DISPLAYFRAME : (uint)0);
-
             if (rc != 0)
                 throw Marshal.GetExceptionForHR(rc);
 
+            GDI32.DeleteObject(hb);
         }
 
         /// <summary>
@@ -223,6 +223,46 @@ namespace Windows7.DesktopIntegration
             if (rc != 0)
                 throw Marshal.GetExceptionForHR(rc);
 
+        }
+
+        public static void SetPeekBitmap(IntPtr hwnd, bool displayFrame)
+        {
+            IntPtr hdcSrc = User32.GetWindowDC(hwnd);
+            // get the size
+            User32.RECT windowRect = new User32.RECT();
+            User32.GetWindowRect(hwnd, ref windowRect);
+            int width = windowRect.right - windowRect.left;
+            int height = windowRect.bottom - windowRect.top;
+            // create a device context we can copy to
+            IntPtr hdcDest = GDI32.CreateCompatibleDC(hdcSrc);
+            // create a bitmap we can copy it to,
+            // using GetDeviceCaps to get the width/height
+            IntPtr hBitmap = GDI32.CreateCompatibleBitmap(hdcSrc, width, height);
+            // select the bitmap object
+            IntPtr hOld = GDI32.SelectObject(hdcDest, hBitmap);
+            // bitblt over
+            GDI32.BitBlt(hdcDest, 0, 0, width, height, hdcSrc, 0, 0, GDI32.SRCCOPY);
+            // restore selection
+            GDI32.SelectObject(hdcDest, hOld);
+            // clean up 
+            GDI32.DeleteDC(hdcDest);
+            User32.ReleaseDC(hwnd, hdcSrc);
+
+            Bitmap bmp = Bitmap.FromHbitmap(hBitmap);
+
+            int rc = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(
+                hwnd,
+                bmp.GetHbitmap(),
+                IntPtr.Zero,
+                displayFrame ? SafeNativeMethods.DWM_SIT_DISPLAYFRAME : (uint)0);
+
+            if (rc != 0)
+                throw Marshal.GetExceptionForHR(rc);
+
+            GC.Collect();
+            
+            GDI32.DeleteObject(hBitmap);
+            GDI32.DeleteObject(bmp.GetHbitmap());
         }
 
         /// <summary>

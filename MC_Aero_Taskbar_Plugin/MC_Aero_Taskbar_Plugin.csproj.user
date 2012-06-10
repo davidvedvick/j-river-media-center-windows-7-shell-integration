@@ -15,4 +15,9 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
     <ErrorReportUrlHistory />
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files (x86)\J River\Media Center 16\Media Center 16.exe</StartProgram>
+    <StartWorkingDirectory>C:\Program Files (x86)\J River\Media Center 16\Plugins\MC_Aero_Taskbar_Plugin\</StartWorkingDirectory>
+  </PropertyGroup>
 </Project>

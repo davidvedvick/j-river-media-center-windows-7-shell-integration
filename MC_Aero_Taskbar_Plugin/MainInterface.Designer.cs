@@ -42,7 +42,6 @@ namespace MC_Aero_Taskbar_Plugin
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.Panel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.mainPanel.SuspendLayout();
@@ -189,10 +188,6 @@ namespace MC_Aero_Taskbar_Plugin
             this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
-            // backgroundWorker1
-            // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            // 
             // MainInterface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -220,7 +215,6 @@ namespace MC_Aero_Taskbar_Plugin
         private System.Windows.Forms.ToolStripContentPanel ContentPanel;
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.TextBox txtUserInfo;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.CheckBox enableCoverArt;
         private System.Windows.Forms.RadioButton trackProgress;
         private System.Windows.Forms.RadioButton playlistProgress;
