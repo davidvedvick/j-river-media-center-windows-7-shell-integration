@@ -598,8 +598,9 @@ namespace MC_Aero_Taskbar_Plugin
     {
         #region Attributes
         private CustomWindowsManager cwm;
-        private Bitmap WindowsPeak;
+        private static Bitmap WindowsPeak;
         private bool IsMinimized = false;
+        private bool PreviewEnabled = false;
         private ScreenCapture sc = new ScreenCapture();
         #endregion
 
@@ -611,6 +612,8 @@ namespace MC_Aero_Taskbar_Plugin
         public const int SC_RESTORE = 0xF120;
         private const int GWL_WNDPROC = -4;
         private const int WM_DESTROY = 0x0002;
+        const UInt32 WS_MINIMIZE = 0x20000000;
+        private const int GWL_STYLE = (-16);
         #endregion
 
         #region delegates
@@ -624,17 +627,22 @@ namespace MC_Aero_Taskbar_Plugin
 
         #region Pinvokes
         [DllImport("user32.dll")]
-        static extern int SetWindowText(IntPtr hWnd, string text);
+        private static extern int SetWindowText(IntPtr hWnd, string text);
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
         [DllImport("dwmapi.dll")]
-        public static extern int DwmInvalidateIconicBitmaps(IntPtr hwnd);
+        private static extern int DwmInvalidateIconicBitmaps(IntPtr hwnd);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
         #endregion
 
         public JrMainWindow(IntPtr handle)
             : base()
         {
             this.AssignHandle(handle);
+            int lStyles = GetWindowLong(this.Handle, GWL_STYLE);
+            if ((GetWindowLong(this.Handle, GWL_STYLE) & WS_MINIMIZE) == 0)
+                WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
             //cwm = CustomWindowsManager.CreateWindowsManager(this.Handle);
             //cwm.PeekRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_PeekRequested);
             //cwm.ThumbnailRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_ThumbnailRequested);
@@ -643,19 +651,23 @@ namespace MC_Aero_Taskbar_Plugin
 
         protected override void WndProc(ref Message m)
         {
+            
             switch (m.Msg)
             {
                 case (WM_SYSCOMMAND):
                     switch ((int)m.WParam)
                     {
                         case SC_MINIMIZE:
+                            // we want to disable custom window previews (but not set the Peak Enabled flag to false)
+                            // if there's no preview to show.
                             IsMinimized = true;
-                            if (WindowsPeak == null) DisableCustomWindowPreview();
+                            if (WindowsPeak == null) Windows7Taskbar.DisableCustomWindowPreview(this.Handle);
                             break;
                         case SC_RESTORE:
                             IsMinimized = false;
                             if (WindowsPeak != null) WindowsPeak.Dispose();
                             WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
+                            if (PreviewEnabled) EnableCustomWindowPreview();
                             break;
                         //case SC_CLOSE:
                         //    if (_hwndParent == IntPtr.Zero) break;
@@ -672,7 +684,6 @@ namespace MC_Aero_Taskbar_Plugin
                         if (WindowsPeak != null) WindowsPeak.Dispose();
                         WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
                     }
-
                     Windows7Taskbar.SetPeekBitmap(this.Handle, WindowsPeak, false);
                     break;
                 case WM_DWMSENDICONICTHUMBNAIL:
@@ -700,11 +711,13 @@ namespace MC_Aero_Taskbar_Plugin
         #region Windows 7 Thumbnail Wrapper Classes
         public void EnableCustomWindowPreview()
         {
+            PreviewEnabled = true;
             Windows7Taskbar.EnableCustomWindowPreview(this.Handle);
         }
 
         public void DisableCustomWindowPreview()
         {
+            PreviewEnabled = false;
             Windows7Taskbar.DisableCustomWindowPreview(this.Handle);
         }
 

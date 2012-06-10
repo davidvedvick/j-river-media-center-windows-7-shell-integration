@@ -83,7 +83,6 @@ namespace MC_Aero_Taskbar_Plugin
             this.txtUserInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtUserInfo.Size = new System.Drawing.Size(886, 74);
             this.txtUserInfo.TabIndex = 0;
-            this.txtUserInfo.Visible = false;
             // 
             // displayArtistTrackName
             // 
