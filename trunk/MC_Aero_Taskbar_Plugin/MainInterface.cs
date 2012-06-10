@@ -383,11 +383,6 @@ namespace MC_Aero_Taskbar_Plugin
         #endregion
 
         #region Plug-in Form Handlers
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void txtUserInfo_TextChanged(object sender, EventArgs e)
         {
 
@@ -403,6 +398,7 @@ namespace MC_Aero_Taskbar_Plugin
         {
             s.enableCoverArt = ((CheckBox)sender).Checked;
             s.Save();
+            setWindowsPreview();
         }
 
         protected override void OnHandleDestroyed(EventArgs e)
@@ -501,6 +497,7 @@ namespace MC_Aero_Taskbar_Plugin
 
         private void setWindowsPreview()
         {
+            if (playback == null) return;
             if (playback.State != MJPlaybackStates.PLAYSTATE_PLAYING && playback.State != MJPlaybackStates.PLAYSTATE_PAUSED)
             {
                 jrWin.DisableCustomWindowPreview();
@@ -509,6 +506,7 @@ namespace MC_Aero_Taskbar_Plugin
 
             nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
             playingFileImgLocation = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
+            if (string.IsNullOrEmpty(playingFileImgLocation)) playingFileImgLocation = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
 
             if (enableCoverArt.Checked)
             {
@@ -523,7 +521,8 @@ namespace MC_Aero_Taskbar_Plugin
         public static extern void DwmQueryThumbnailSourceSize(IntPtr hThumbnail, out Size size);
         private void setThumbnail(string currentFile)
         {
-            setThumbnail(currentFile, new Size(120, 120));
+            // Can't imagine a thumnbail having much smaller size than this.
+            setThumbnail(currentFile, new Size(1, 1));
         }
 
         private void setThumbnail(string currentFile, Size thumbnailSize)
@@ -614,6 +613,9 @@ namespace MC_Aero_Taskbar_Plugin
         private const int WM_DESTROY = 0x0002;
         const UInt32 WS_MINIMIZE = 0x20000000;
         private const int GWL_STYLE = (-16);
+        private const int WM_SIZE = 0x0005;
+        private const int WM_MOVE = 0x0003;
+        private const int WM_EXITSIZEMOVE = 0x0232;
         #endregion
 
         #region delegates
@@ -623,6 +625,7 @@ namespace MC_Aero_Taskbar_Plugin
         #region Events
         public event JrEventHandler RequestThumbnail;
         public event JrEventHandler RequestTrackProgressUpdate;
+        public event JrEventHandler WindowClosing;
         #endregion
 
         #region Pinvokes
@@ -678,6 +681,24 @@ namespace MC_Aero_Taskbar_Plugin
                     }
 
                     break;
+                case WM_MOVE:
+                    if ((GetWindowLong(this.Handle, GWL_STYLE) & WS_MINIMIZE) != 0) break;
+
+                    if (PreviewEnabled)
+                    {
+                        if (WindowsPeak != null) WindowsPeak.Dispose();
+                        WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
+                    }
+                    break;
+                case WM_SIZE:
+                    if (m.WParam.ToInt32() == 1) break;
+
+                    if (PreviewEnabled)
+                    {
+                        if (WindowsPeak != null) WindowsPeak.Dispose();
+                        WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
+                    }
+                    break;
                 case WM_DWMSENDICONICLIVEPREVIEWBITMAP:
                     if (!IsMinimized)
                     {
@@ -696,6 +717,10 @@ namespace MC_Aero_Taskbar_Plugin
                         SetThumbnailPreview(args.thumbBmp);
                         args.thumbBmp.Dispose();
                     }
+                    break;
+                case WM_DESTROY:
+                    if (WindowClosing != null)
+                        WindowClosing(this, EventArgs.Empty);
                     break;
                 default:
                     break;
