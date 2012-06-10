@@ -86,16 +86,6 @@ namespace MC_Aero_Taskbar_Plugin
         {
             InitializeComponent();
 
-            // Don't run unless the taskbar extensions are supported (currently Windows 7+).
-            //if (!Windows7Taskbar.)
-            //{
-            //    MessageBox.Show("This sample requires Windows 7 to run");
-            //    Application.Exit();
-            //}
-            //this.mcRef = mcRef;
-            //Init(mcRef);
-
-
         }
         #endregion
 
