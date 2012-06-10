@@ -40,25 +40,17 @@ namespace MC_Aero_Taskbar_Plugin
         private static string AppId = "MC_Jumpbar";
         private Win32WndProc newWndProc;
         public IntPtr oldWndProc = IntPtr.Zero;
-        private Bitmap screen;
+        private static Bitmap screen;
         private Rectangle windowsize;
         private bool windowMinimized = false;
         private StringBuilder oldWindowText = new StringBuilder();
         private IMJFileAutomation nowPlayingFile;
+        private string playingFileImgLocation;
         private IMJPlaybackAutomation playback;
         private Settings s = new Settings();
-        private Size thumbnailSize = new Size(120, 120);
+        private static JrMainWindow jrWin;
+        //private static CustomWindowsManager cwm;
 
-        #endregion
-
-        #region Constants
-        public const int WM_DWMSENDICONICTHUMBNAIL = 0x0323;
-        public const int WM_DWMSENDICONICLIVEPREVIEWBITMAP = 0x0326;
-        public const int WM_SYSCOMMAND = 0x0112;
-        public const int SC_MINIMIZE = 0xF020;
-        public const int SC_RESTORE = 0xF120;
-        private const int GWL_WNDPROC = -4;
-        private const int WM_DESTROY = 0x0002;
         #endregion
 
         #region DLL Imports
@@ -169,17 +161,70 @@ namespace MC_Aero_Taskbar_Plugin
                 //txtUserInfo.Visible = true;
                 txtUserInfo.Visible = true;
                 addUserInfoText("Plugin Initiated OK");
-                StartSubclass((IntPtr)mcRef.GetWindowHandle());
+                //cwm = CustomWindowsManager.CreateWindowsManager((IntPtr)mcRef.GetWindowHandle(), IntPtr.Zero);
+                //cwm.ThumbnailRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_ThumbnailRequested);
+                //cwm.PeekRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_PeekRequested);
+                jrWin = new JrMainWindow(mcRef);
+                jrWin.RequestThumbnail += new JrMainWindow.JrEventHandler(jrWin_RequestThumbnail);
+                //jrWin.RequestPreview += new JrMainWindow.JrEventHandler(jrWin_RequestPreview);
+                //jrWin.RequestTrackProgressUpdate += new JrMainWindow.JrEventHandler(jrWin_RequestTrackProgressUpdate);
+                //StartSubclass((IntPtr)mcRef.GetWindowHandle());
                 ScreenCapture sc = new ScreenCapture();
                 screen = new Bitmap(sc.CaptureWindow((IntPtr)mcRef.GetWindowHandle()));
                 GetWindowText((IntPtr)mcRef.GetWindowHandle(), oldWindowText, oldWindowText.Capacity);
-                backgroundWorker1.RunWorkerAsync();
+                //backgroundWorker1.RunWorkerAsync();
                                 
             }
             catch (Exception e)
             {
                 exceptionHandler(e);
             }
+        }
+
+           void jrWin_RequestTrackProgressUpdate(object sender, EventArgs e)
+        {
+            if (trackProgress.Checked)
+            {
+                if (playback.State == MJPlaybackStates.PLAYSTATE_PLAYING)
+                {
+                    //Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.Normal);
+                    jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
+                    //addUserInfoText("Duration: " + playback.Duration);
+                    if (nowPlayingFile.Duration <= 0) jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Indeterminate);
+                    else
+                    {
+                        if (playback.Position >= 0) jrWin.SetProgressValue(playback.Position, nowPlayingFile.Duration);
+                    }
+                }
+                else if (playback.State == MJPlaybackStates.PLAYSTATE_PAUSED) jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Paused);
+            }
+            else if (playlistProgress.Checked)
+            {
+                jrWin.SetProgressState(playback.State != MJPlaybackStates.PLAYSTATE_PAUSED ? Windows7Taskbar.ThumbnailProgressState.Normal : Windows7Taskbar.ThumbnailProgressState.Paused);
+                jrWin.SetProgressValue(mcRef.GetCurPlaylist().Position, mcRef.GetCurPlaylist().GetNumberFiles());
+            }
+            else
+            {
+                jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
+            }
+        }
+
+        private void jrWin_RequestPreview(object sender, EventArgs e)
+        {
+            setWindowsPeak();
+        }
+
+        private void jrWin_RequestThumbnail(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(playingFileImgLocation))
+            {
+                Image coverArt = Image.FromFile(playingFileImgLocation);
+                //addUserInfoText("getting image thumbnail at: " + currentFile);
+                JrThumbArgs jArgs = (JrThumbArgs)e;
+                jArgs.thumb = resizeImage(coverArt, jArgs.thumbnailSize);
+                //addUserInfoText(coverArtFile.ToString());
+            } 
+
         }
 
         private void initAll()
@@ -332,6 +377,7 @@ namespace MC_Aero_Taskbar_Plugin
         {
             // Debug info
             addUserInfoText(strCommand + "/" + strEvent + "/" + strEventInfo);
+            playback = mcRef.GetPlayback();
             //ScreenCapture.GrabWindowBitmap((IntPtr)mcRef.GetWindowHandle(), new Size(windowsize.Width, windowsize.Height), out screen);
             switch (strCommand)
             {
@@ -340,9 +386,21 @@ namespace MC_Aero_Taskbar_Plugin
                     {
                         case "MCC: NOTIFY_TRACK_CHANGE":
                         case "MCC: NOTIFY_PLAYERSTATE_CHANGE":
-                            StopSubclass((IntPtr)mcRef.GetWindowHandle());
-                            StartSubclass((IntPtr)mcRef.GetWindowHandle());
-                            backgroundWorker1.RunWorkerAsync();
+
+                            if (playback.State != MJPlaybackStates.PLAYSTATE_STOPPED)
+                            {
+
+                                nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
+                                playingFileImgLocation = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
+
+                                if (enableCoverArt.Checked)
+                                {
+                                    jrWin.EnableCustomWindowPreview();
+                                    setThumbnail(playingFileImgLocation);
+                                }
+                            }
+                            else jrWin.DisableCustomWindowPreview();
+                            //backgroundWorker1.RunWorkerAsync();
                             break;
 
                         case "MCC: NOTIFY_PLAYLIST_ADDED":
@@ -408,72 +466,48 @@ namespace MC_Aero_Taskbar_Plugin
 
         #endregion
 
-        #region Window Proc stuff
-        public void StartSubclass(IntPtr hWnd)
-        {
-            // delegate for the new wndproc
-            addUserInfoText("Starting subclass");
-            newWndProc = new Win32WndProc(MyWndProc);
-
-            if (oldWndProc.ToInt32() != 0)
-                SetWindowLong(hWnd, GWL_WNDPROC, newWndProc);
-            else
-                oldWndProc = SetWindowLong(hWnd, GWL_WNDPROC, newWndProc);
-        }
-
-        /// <summary>
-        /// After we have finished we need to 
-        /// return the old handle, else we will
-        /// never be able to exit clean from the
-        /// program
-        /// </summary>
-        /// <param name="hWnd"></param>
-        public void StopSubclass(IntPtr hWnd)
-        {
-            if (oldWndProc.ToInt32() != 0) SetWindowLong(hWnd, GWL_WNDPROC, oldWndProc);
-        }
-        
-        private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
-        {
-            if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-            else Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-            //addUserInfoText(Msg.ToString());
-            switch (Msg)
-            {
-                case WM_SYSCOMMAND:
-                    addUserInfoText("System Command");
-                    switch (wParam)
-                    {
-                        case SC_MINIMIZE:
-                            windowMinimized = true;
-                            break;
-                        case SC_RESTORE:
-                            windowMinimized = false;
-                            break;
-                    }
-                    break;
-                case WM_DWMSENDICONICLIVEPREVIEWBITMAP:
-                    setWindowsPeak();
-                    return 0;
-                    //break;
-                case WM_DWMSENDICONICTHUMBNAIL:
-                    string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
-                    //addUserInfoText(imageFileName);
-                    int width = (int)((long)lParam >> 16);
-                    int height = (int)(((long)lParam) & (0xFFFF));
-                    thumbnailSize = new Size(width, height);
-                    addUserInfoText(thumbnailSize.ToString());
-                    if (!string.IsNullOrEmpty(imageFileName)) setPreview(imageFileName);
-                    //imageFileName = "";
-                    return 0;
-                    //break;
-                default:
-                    //generateWindowsPeak = false;
-                    break;
-            }
-            return CallWindowProc(oldWndProc, hWnd, Msg, wParam, lParam);
-        }
-        #endregion
+        //#region Window Proc stuff
+        //private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
+        //{
+        //    //if (enableCoverArt.Checked && mcRef.GetPlayback().State != MJPlaybackStates.PLAYSTATE_STOPPED) Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+        //    //else Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
+        //    //addUserInfoText(Msg.ToString());
+        //    switch (Msg)
+        //    {
+        //        case WM_SYSCOMMAND:
+        //            addUserInfoText("System Command");
+        //            switch (wParam)
+        //            {
+        //                case SC_MINIMIZE:
+        //                    windowMinimized = true;
+        //                    break;
+        //                case SC_RESTORE:
+        //                    windowMinimized = false;
+        //                    break;
+        //            }
+        //            break;
+        //        case WM_DWMSENDICONICLIVEPREVIEWBITMAP:
+        //            setWindowsPeak();
+        //            return 0;
+        //            //break;
+        //        case WM_DWMSENDICONICTHUMBNAIL:
+        //            string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
+        //            //addUserInfoText(imageFileName);
+        //            int width = (int)((long)lParam >> 16);
+        //            int height = (int)(((long)lParam) & (0xFFFF));
+        //            thumbnailSize = new Size(width, height);
+        //            addUserInfoText(thumbnailSize.ToString());
+        //            if (!string.IsNullOrEmpty(imageFileName)) setPreview(imageFileName);
+        //            //imageFileName = "";
+        //            return 0;
+        //            //break;
+        //        default:
+        //            //generateWindowsPeak = false;
+        //            break;
+        //    }
+        //    return CallWindowProc(oldWndProc, hWnd, Msg, wParam, lParam);
+        //}
+        //#endregion
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -522,65 +556,51 @@ namespace MC_Aero_Taskbar_Plugin
             //IMJFileAutomation nowPlayingFile;
             //nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
 
+            //jrWin = new JrMainWindow((IntPtr)mcRef.GetWindowHandle());
+
             string prevFileName = "";
             
             try
             {
                 while (playback.State != MJPlaybackStates.PLAYSTATE_STOPPED)
                 {
-                    nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
-                    //addUserInfoText("Playback state: " + playback.State);
                     
-                    if (enableCoverArt.Checked)
-                    {
-                        Windows7Taskbar.EnableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-                        if (nowPlayingFile.Name != prevFileName)
-                        {
-                            string imageFileName = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM) ?? nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
+                    //addUserInfoText("Playback state: " + playback.State);
 
-                            if (!string.IsNullOrEmpty(imageFileName))
-                            {
-                                setPreview(imageFileName);
-                                setWindowsPeak();
-                            }
-                        }
-
-                        prevFileName = nowPlayingFile.Name;
-                    }
-                    else
-                        Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-
+                    if (enableCoverArt.Checked) jrWin.EnableCustomWindowPreview();
+                    
                     if (trackProgress.Checked)
                     {
                         if (playback.State == MJPlaybackStates.PLAYSTATE_PLAYING)
                         {
-                            Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.Normal);
+                            //Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.Normal);
+                            jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
                             //addUserInfoText("Duration: " + playback.Duration);
-                            if (nowPlayingFile.Duration <= 0) Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.Indeterminate);
+                            if (nowPlayingFile.Duration <= 0) jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Indeterminate);
                             else
                             {
-                                if (playback.Position >= 0) Windows7Taskbar.SetProgressValue((IntPtr)mcRef.GetWindowHandle(), (ulong)playback.Position, (ulong)nowPlayingFile.Duration);
+                                if (playback.Position >= 0) jrWin.SetProgressValue(playback.Position, nowPlayingFile.Duration);
                             }
                         }
-                        else if (playback.State == MJPlaybackStates.PLAYSTATE_PAUSED) Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.Paused);
+                        else if (playback.State == MJPlaybackStates.PLAYSTATE_PAUSED) jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Paused);
                     }
 
                     else if (playlistProgress.Checked)
                     {
-                        Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), playback.State != MJPlaybackStates.PLAYSTATE_PAUSED ? Windows7Taskbar.ThumbnailProgressState.Normal : Windows7Taskbar.ThumbnailProgressState.Paused);
-                        Windows7Taskbar.SetProgressValue((IntPtr)mcRef.GetWindowHandle(), (ulong)mcRef.GetCurPlaylist().Position, (ulong)mcRef.GetCurPlaylist().GetNumberFiles());
+                        jrWin.SetProgressState(playback.State != MJPlaybackStates.PLAYSTATE_PAUSED ? Windows7Taskbar.ThumbnailProgressState.Normal : Windows7Taskbar.ThumbnailProgressState.Paused);
+                        jrWin.SetProgressValue(mcRef.GetCurPlaylist().Position, mcRef.GetCurPlaylist().GetNumberFiles());
                     }
 
                     else
                     {
-                        Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.NoProgress);
+                        jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
                     }
-                    setWindowTitle(nowPlayingFile);
+                    //setWindowTitle(nowPlayingFile);
                     System.Threading.Thread.Sleep(250);
                     
                 }
-                Windows7Taskbar.DisableCustomWindowPreview((IntPtr)mcRef.GetWindowHandle());
-                Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.NoProgress);
+                jrWin.DisableCustomWindowPreview();
+                jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
             }
             catch (Exception ex)
             {
@@ -591,19 +611,23 @@ namespace MC_Aero_Taskbar_Plugin
 
         private void setWindowsPeak()
         {
-            if (!windowMinimized)
-            {
-                GetWindowRect((IntPtr)mcRef.GetWindowHandle(), ref windowsize);
-                ScreenCapture sc = new ScreenCapture();
-                screen.Dispose();
-                screen = new Bitmap(sc.CaptureWindow((IntPtr)mcRef.GetWindowHandle()));
-            }
+            //if (!windowMinimized)
+            //{
+            //    GetWindowRect((IntPtr)mcRef.GetWindowHandle(), ref windowsize);
+            //    ScreenCapture sc = new ScreenCapture();
+            //    screen.Dispose();
+            //    screen = null;
+            //    screen = new Bitmap(sc.CaptureWindow((IntPtr)mcRef.GetWindowHandle()));
+            //}
             
-            if (screen != null)
+            if (!windowMinimized)
             {
                 try
                 {
-                    Windows7Taskbar.SetPeekBitmap((IntPtr)mcRef.GetWindowHandle(), screen.GetHbitmap(), false);
+                    //ScreenCapture sc = new ScreenCapture();
+                    //IntPtr hb = sc.GetHbitMapWindow((IntPtr)mcRef.GetWindowHandle());
+                    Windows7Taskbar.SetPeekBitmap((IntPtr)mcRef.GetWindowHandle(), false);
+                    //sc.DeleteHbitmapObject(hb);
                 }
                 catch (Exception e)
                 {
@@ -615,18 +639,21 @@ namespace MC_Aero_Taskbar_Plugin
         [DllImport("dwmapi.dll", PreserveSig = false)]
         public static extern void DwmQueryThumbnailSourceSize(IntPtr hThumbnail, out Size size);
 
-        private void setPreview(string currentFile)
+        private void setThumbnail(string currentFile)
+        {
+            setThumbnail(currentFile, new Size(120, 120));
+        }
+
+        private void setThumbnail(string currentFile, Size thumbnailSize)
         {
             try
             {
                 if (!string.IsNullOrEmpty(currentFile))
                 {
-                    Image coverArt = Image.FromFile(currentFile);
-                    
-                    
-                    addUserInfoText("getting image thumbnail at: " + currentFile);
+                    Image coverArt = Image.FromFile(currentFile);                    
+                    //addUserInfoText("getting image thumbnail at: " + currentFile);
                     Bitmap coverArtFile = resizeImage(coverArt, thumbnailSize);
-                    addUserInfoText(coverArtFile.ToString());
+                    //addUserInfoText(coverArtFile.ToString());
                     Windows7Taskbar.SetIconicThumbnail((IntPtr)mcRef.GetWindowHandle(), coverArtFile);
                 }
             }
@@ -691,18 +718,18 @@ namespace MC_Aero_Taskbar_Plugin
             base.OnLoad(e);
         }
 
-        [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
-        protected override void WndProc(ref Message m)
-        {
-            // Listen for operating system messages.
-            switch (m.Msg)
-            {
-                case WM_DESTROY:
-                    StopSubclass((IntPtr)mcRef.GetWindowHandle());
-                break;
-            }
-            base.WndProc(ref m);
-        }
+        //[System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
+        //protected override void WndProc(ref Message m)
+        //{
+        //    // Listen for operating system messages.
+        //    switch (m.Msg)
+        //    {
+        //        case WM_DESTROY:
+        //            StopSubclass((IntPtr)mcRef.GetWindowHandle());
+        //        break;
+        //    }
+        //    base.WndProc(ref m);
+        //}
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
@@ -734,5 +761,130 @@ namespace MC_Aero_Taskbar_Plugin
         }
     }
 
-    
+    class JrMainWindow : NativeWindow
+    {
+        #region Attributes
+        private CustomWindowsManager cwm;
+        private Bitmap coverArtImage;
+        #endregion
+
+        #region Constants
+        public const int WM_DWMSENDICONICTHUMBNAIL = 0x0323;
+        public const int WM_DWMSENDICONICLIVEPREVIEWBITMAP = 0x0326;
+        public const int WM_SYSCOMMAND = 0x0112;
+        public const int SC_MINIMIZE = 0xF020;
+        public const int SC_RESTORE = 0xF120;
+        private const int GWL_WNDPROC = -4;
+        private const int WM_DESTROY = 0x0002;
+        #endregion
+
+        #region delegates
+        public delegate void JrEventHandler(object sender, EventArgs e);
+        #endregion
+
+        #region Events
+        public event JrEventHandler RequestThumbnail;
+        public event JrEventHandler RequestPreview;
+        public event JrEventHandler RequestTrackProgressUpdate;
+        #endregion
+
+        public JrMainWindow(MCAutomation mcRef)
+            : base()
+        {
+            this.AssignHandle((IntPtr)mcRef.GetWindowHandle());
+            cwm = CustomWindowsManager.CreateWindowsManager(this.Handle);
+            cwm.PeekRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_PeekRequested);
+            cwm.ThumbnailRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_ThumbnailRequested);
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+
+            switch (m.Msg)
+            {
+                case WM_SYSCOMMAND:
+                    //switch (wParam)
+                    //{
+                    //}
+                    break;
+                //case WM_DWMSENDICONICLIVEPREVIEWBITMAP:
+                //    if (RequestPreview != null)
+                //        RequestPreview(this, EventArgs.Empty);
+                //    break;
+                case WM_DWMSENDICONICTHUMBNAIL:
+                    int width = (int)((long)m.LParam >> 16);
+                    int height = (int)(((long)m.LParam) & (0xFFFF));
+                    if (RequestThumbnail != null)
+                    {
+                        JrThumbArgs args = new JrThumbArgs(new Size(width, height));
+                        RequestThumbnail(this, args);
+                        coverArtImage = args.thumb;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+            if (cwm != null)
+            {
+                cwm.EnablePreview();
+                if (coverArtImage == null) cwm.DisablePreview();
+                cwm.DispatchMessage(ref m);
+                cwm.InvalidatePreviews();
+            }
+            //if (RequestTrackProgressUpdate != null)
+            //    RequestTrackProgressUpdate(this, EventArgs.Empty);
+            base.WndProc(ref m);
+        }
+
+        #region Windows 7 Thumbnail Wrapper Classes
+        public void EnableCustomWindowPreview()
+        {
+            Windows7Taskbar.EnableCustomWindowPreview(this.Handle);
+        }
+
+        public void DisableCustomWindowPreview()
+        {
+            Windows7Taskbar.DisableCustomWindowPreview(this.Handle);
+        }
+
+        public void SetProgressState(Windows7Taskbar.ThumbnailProgressState progressState)
+        {
+            Windows7Taskbar.SetProgressState(this.Handle, progressState);
+           
+        }
+
+        public void SetProgressValue(int current, int maximum)
+        {
+            Windows7Taskbar.SetProgressValue(this.Handle, (ulong)current, (ulong)maximum);
+        }
+
+        void cwm_PeekRequested(object sender, BitmapRequestedEventArgs e)
+        {
+            e.DisplayFrameAroundBitmap = false;
+            e.DoNotMirrorBitmap = false;
+            e.UseWindowScreenshot = true;
+        }
+
+        void cwm_ThumbnailRequested(object sender, BitmapRequestedEventArgs e)
+        {
+            e.DoNotMirrorBitmap = true;
+            if (coverArtImage != null)
+                e.Bitmap = coverArtImage;
+        }
+
+        #endregion
+    }
+
+    class JrThumbArgs : EventArgs
+    {
+        public readonly Size thumbnailSize;
+        public Bitmap thumb;
+
+        public JrThumbArgs(Size thumbnailSize)
+        {
+            this.thumbnailSize = thumbnailSize;
+        }
+
+    }
 }

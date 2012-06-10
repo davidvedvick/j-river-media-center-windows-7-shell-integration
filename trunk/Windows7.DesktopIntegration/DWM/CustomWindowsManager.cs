@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Windows7.DesktopIntegration.Interop;
 using VistaBridgeInterop = Microsoft.SDK.Samples.VistaBridge.Interop;
+using System.IO;
 
 namespace Windows7.DesktopIntegration
 {
@@ -17,6 +18,7 @@ namespace Windows7.DesktopIntegration
     {
         private Bitmap _bitmap;
         private int _width, _height;
+        private static MemoryStream ms;
 
         internal BitmapRequestedEventArgs(int width, int height, bool defaultDisplayFrame)
         {
@@ -298,6 +300,7 @@ namespace Windows7.DesktopIntegration
                     }
 
                     b.Bitmap = ScreenCapture.GrabWindowBitmap(_hwnd, new Size(width, height));
+                    
                 }
                 else if (!b.DoNotMirrorBitmap)
                 {
@@ -305,7 +308,13 @@ namespace Windows7.DesktopIntegration
                 }
 
                 Windows7Taskbar.SetIconicThumbnail(WindowToTellDwmAbout, b.Bitmap);
-                b.Bitmap.Dispose(); //TODO: Is it our responsibility?
+                if (b.Bitmap != null)
+                {
+                    b.Bitmap.Dispose(); //TODO: Is it our responsibility?
+                    b.Bitmap = null;
+                    GC.Collect(2);
+                    GC.WaitForPendingFinalizers();
+                }
             }
             else if (m.Msg == SafeNativeMethods.WM_DWMSENDICONICLIVEPREVIEWBITMAP)
             {
@@ -322,12 +331,17 @@ namespace Windows7.DesktopIntegration
                 if (b.UseWindowScreenshot)
                 {
                     b.Bitmap = ScreenCapture.GrabWindowBitmap(_hwnd, clientSize);
+                    b.Bitmap.RotateFlip(RotateFlipType.Rotate180FlipX);
                 }
                 else if (!b.DoNotMirrorBitmap)
                 {
                     b.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                 }
-
+                //using (MemoryStream ms = new MemoryStream()) // estimatedLength can be original fileLength
+                //{
+                //    b.Bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp); // save image to stream in Jpeg format
+                //    GC.AddMemoryPressure(ms.Length);
+                //}
                 if (_hwndParent != IntPtr.Zero)
                 {
                     Point offset = WindowUtilities.GetParentOffsetOfChild(_hwnd, _hwndParent);
@@ -337,8 +351,16 @@ namespace Windows7.DesktopIntegration
                 {
                     Windows7Taskbar.SetPeekBitmap(WindowToTellDwmAbout, b.Bitmap, b.DisplayFrameAroundBitmap);
                 }
-                b.Bitmap.Dispose(); //TODO: Is it our responsibility?
+
+                if (b.Bitmap != null)
+                {
+                    b.Bitmap.Dispose(); //TODO: Is it our responsibility?
+                    b.Bitmap = null;
+                    GC.Collect(2);
+                    GC.WaitForPendingFinalizers();
+                }
             }
+            
         }
     }
 
