@@ -308,13 +308,7 @@ namespace Windows7.DesktopIntegration
                 }
 
                 Windows7Taskbar.SetIconicThumbnail(WindowToTellDwmAbout, b.Bitmap);
-                if (b.Bitmap != null)
-                {
-                    b.Bitmap.Dispose(); //TODO: Is it our responsibility?
-                    b.Bitmap = null;
-                    GC.Collect(2);
-                    GC.WaitForPendingFinalizers();
-                }
+                b.Bitmap.Dispose();
             }
             else if (m.Msg == SafeNativeMethods.WM_DWMSENDICONICLIVEPREVIEWBITMAP)
             {
@@ -352,13 +346,7 @@ namespace Windows7.DesktopIntegration
                     Windows7Taskbar.SetPeekBitmap(WindowToTellDwmAbout, b.Bitmap, b.DisplayFrameAroundBitmap);
                 }
 
-                if (b.Bitmap != null)
-                {
-                    b.Bitmap.Dispose(); //TODO: Is it our responsibility?
-                    b.Bitmap = null;
-                    GC.Collect(2);
-                    GC.WaitForPendingFinalizers();
-                }
+                b.Bitmap.Dispose();
             }
             
         }
