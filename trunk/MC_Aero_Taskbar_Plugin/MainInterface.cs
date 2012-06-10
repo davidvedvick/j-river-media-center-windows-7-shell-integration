@@ -152,6 +152,7 @@ namespace MC_Aero_Taskbar_Plugin
                     // Tell MC to call our MJEvent Routine in case of evenst
                 this.mcRef = mcRef;
                 this.mcRef.FireMJEvent += new IMJAutomationEvents_FireMJEventEventHandler(MJEvent);
+                playback = mcRef.GetPlayback();
                 // Init our plugin
                 initAll();
                 // This is the main entry for MC Automation
@@ -161,16 +162,10 @@ namespace MC_Aero_Taskbar_Plugin
                 //txtUserInfo.Visible = true;
                 txtUserInfo.Visible = true;
                 addUserInfoText("Plugin Initiated OK");
-                //cwm = CustomWindowsManager.CreateWindowsManager((IntPtr)mcRef.GetWindowHandle(), IntPtr.Zero);
-                //cwm.ThumbnailRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_ThumbnailRequested);
-                //cwm.PeekRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_PeekRequested);
-                jrWin = new JrMainWindow(mcRef);
+                jrWin = new JrMainWindow((IntPtr)mcRef.GetWindowHandle());
                 jrWin.RequestThumbnail += new JrMainWindow.JrEventHandler(jrWin_RequestThumbnail);
-                //jrWin.RequestPreview += new JrMainWindow.JrEventHandler(jrWin_RequestPreview);
-                //jrWin.RequestTrackProgressUpdate += new JrMainWindow.JrEventHandler(jrWin_RequestTrackProgressUpdate);
+                jrWin.RequestTrackProgressUpdate += new JrMainWindow.JrEventHandler(jrWin_RequestTrackProgressUpdate);
                 //StartSubclass((IntPtr)mcRef.GetWindowHandle());
-                ScreenCapture sc = new ScreenCapture();
-                screen = new Bitmap(sc.CaptureWindow((IntPtr)mcRef.GetWindowHandle()));
                 GetWindowText((IntPtr)mcRef.GetWindowHandle(), oldWindowText, oldWindowText.Capacity);
                 //backgroundWorker1.RunWorkerAsync();
                                 
@@ -181,8 +176,10 @@ namespace MC_Aero_Taskbar_Plugin
             }
         }
 
-           void jrWin_RequestTrackProgressUpdate(object sender, EventArgs e)
+        void jrWin_RequestTrackProgressUpdate(object sender, EventArgs e)
         {
+            if (nowPlayingFile == null) return;
+
             if (trackProgress.Checked)
             {
                 if (playback.State == MJPlaybackStates.PLAYSTATE_PLAYING)
@@ -221,7 +218,7 @@ namespace MC_Aero_Taskbar_Plugin
                 Image coverArt = Image.FromFile(playingFileImgLocation);
                 //addUserInfoText("getting image thumbnail at: " + currentFile);
                 JrThumbArgs jArgs = (JrThumbArgs)e;
-                jArgs.thumb = resizeImage(coverArt, jArgs.thumbnailSize);
+                jArgs.thumbBmp = resizeImage(coverArt, jArgs.thumbnailSize);
                 //addUserInfoText(coverArtFile.ToString());
             } 
 
@@ -377,7 +374,7 @@ namespace MC_Aero_Taskbar_Plugin
         {
             // Debug info
             addUserInfoText(strCommand + "/" + strEvent + "/" + strEventInfo);
-            playback = mcRef.GetPlayback();
+            
             //ScreenCapture.GrabWindowBitmap((IntPtr)mcRef.GetWindowHandle(), new Size(windowsize.Width, windowsize.Height), out screen);
             switch (strCommand)
             {
@@ -387,7 +384,7 @@ namespace MC_Aero_Taskbar_Plugin
                         case "MCC: NOTIFY_TRACK_CHANGE":
                         case "MCC: NOTIFY_PLAYERSTATE_CHANGE":
 
-                            if (playback.State != MJPlaybackStates.PLAYSTATE_STOPPED)
+                            if (playback.State == MJPlaybackStates.PLAYSTATE_PLAYING || playback.State == MJPlaybackStates.PLAYSTATE_PAUSED)
                             {
 
                                 nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
@@ -765,7 +762,6 @@ namespace MC_Aero_Taskbar_Plugin
     {
         #region Attributes
         private CustomWindowsManager cwm;
-        private Bitmap coverArtImage;
         #endregion
 
         #region Constants
@@ -784,68 +780,57 @@ namespace MC_Aero_Taskbar_Plugin
 
         #region Events
         public event JrEventHandler RequestThumbnail;
-        public event JrEventHandler RequestPreview;
         public event JrEventHandler RequestTrackProgressUpdate;
         #endregion
 
-        public JrMainWindow(MCAutomation mcRef)
+        public JrMainWindow(IntPtr handle)
             : base()
         {
-            this.AssignHandle((IntPtr)mcRef.GetWindowHandle());
+            this.AssignHandle(handle);
             cwm = CustomWindowsManager.CreateWindowsManager(this.Handle);
             cwm.PeekRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_PeekRequested);
             cwm.ThumbnailRequested += new EventHandler<BitmapRequestedEventArgs>(cwm_ThumbnailRequested);
+            cwm.DisablePreview();
         }
 
         protected override void WndProc(ref Message m)
         {
 
-            switch (m.Msg)
-            {
-                case WM_SYSCOMMAND:
-                    //switch (wParam)
-                    //{
-                    //}
-                    break;
-                //case WM_DWMSENDICONICLIVEPREVIEWBITMAP:
-                //    if (RequestPreview != null)
-                //        RequestPreview(this, EventArgs.Empty);
-                //    break;
-                case WM_DWMSENDICONICTHUMBNAIL:
-                    int width = (int)((long)m.LParam >> 16);
-                    int height = (int)(((long)m.LParam) & (0xFFFF));
-                    if (RequestThumbnail != null)
-                    {
-                        JrThumbArgs args = new JrThumbArgs(new Size(width, height));
-                        RequestThumbnail(this, args);
-                        coverArtImage = args.thumb;
-                    }
-                    break;
-                default:
-                    break;
-            }
+            //switch (m.Msg)
+            //{
+            //    case WM_SYSCOMMAND:
+            //        //switch (wParam)
+            //        //{
+            //        //}
+            //        break;
+            //    case WM_DWMSENDICONICTHUMBNAIL:
+            //        int width = (int)((long)m.LParam >> 16);
+            //        int height = (int)(((long)m.LParam) & (0xFFFF));
+                    
+            //        break;
+            //    default:
+            //        break;
+            //}
             
             if (cwm != null)
             {
-                cwm.EnablePreview();
-                if (coverArtImage == null) cwm.DisablePreview();
                 cwm.DispatchMessage(ref m);
                 cwm.InvalidatePreviews();
             }
-            //if (RequestTrackProgressUpdate != null)
-            //    RequestTrackProgressUpdate(this, EventArgs.Empty);
+            if (RequestTrackProgressUpdate != null)
+                RequestTrackProgressUpdate(this, EventArgs.Empty);
             base.WndProc(ref m);
         }
 
         #region Windows 7 Thumbnail Wrapper Classes
         public void EnableCustomWindowPreview()
         {
-            Windows7Taskbar.EnableCustomWindowPreview(this.Handle);
+            cwm.EnablePreview();
         }
 
         public void DisableCustomWindowPreview()
         {
-            Windows7Taskbar.DisableCustomWindowPreview(this.Handle);
+            cwm.DisablePreview();
         }
 
         public void SetProgressState(Windows7Taskbar.ThumbnailProgressState progressState)
@@ -869,8 +854,12 @@ namespace MC_Aero_Taskbar_Plugin
         void cwm_ThumbnailRequested(object sender, BitmapRequestedEventArgs e)
         {
             e.DoNotMirrorBitmap = true;
-            if (coverArtImage != null)
-                e.Bitmap = coverArtImage;
+            if (RequestThumbnail != null)
+            {
+                JrThumbArgs args = new JrThumbArgs(new Size(e.Width, e.Height));
+                RequestThumbnail(this, args);
+                e.Bitmap = args.thumbBmp;
+            }
         }
 
         #endregion
@@ -879,7 +868,7 @@ namespace MC_Aero_Taskbar_Plugin
     class JrThumbArgs : EventArgs
     {
         public readonly Size thumbnailSize;
-        public Bitmap thumb;
+        public Bitmap thumbBmp;
 
         public JrThumbArgs(Size thumbnailSize)
         {
