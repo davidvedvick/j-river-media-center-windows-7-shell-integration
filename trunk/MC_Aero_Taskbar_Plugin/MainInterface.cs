@@ -497,23 +497,34 @@ namespace MC_Aero_Taskbar_Plugin
         private void setWindowsPreview()
         {
             if (playback == null) return;
-            if (playback.State != MJPlaybackStates.PLAYSTATE_PLAYING && playback.State != MJPlaybackStates.PLAYSTATE_PAUSED)
+            switch (playback.State)
             {
-                jrWin.DisableCustomWindowPreview();
-                return;
+                case MJPlaybackStates.PLAYSTATE_STOPPED:
+                    jrWin.DisableCustomWindowPreview();
+                    jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
+                    break;
+                case MJPlaybackStates.PLAYSTATE_PAUSED:
+                case MJPlaybackStates.PLAYSTATE_PLAYING:
+                    jrWin.SetProgressState(playback.State == MJPlaybackStates.PLAYSTATE_PLAYING ? Windows7Taskbar.ThumbnailProgressState.Normal : Windows7Taskbar.ThumbnailProgressState.Paused);
+                    nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
+                    playingFileImgLocation = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
+                    if (string.IsNullOrEmpty(playingFileImgLocation)) playingFileImgLocation = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
+
+                    if (enableCoverArt.Checked)
+                    {
+                        jrWin.EnableCustomWindowPreview();
+                        setThumbnail(playingFileImgLocation);
+                    }
+
+                    jrWin.SetWindowTitle(displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText);
+                    break;
+                case MJPlaybackStates.PLAYSTATE_WAITING:
+                    jrWin.SetProgressValue(0, 1);
+                    jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Indeterminate);
+                    jrWin.SetWindowTitle(displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText);
+                    break;
             }
-
-            nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
-            playingFileImgLocation = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_THUMBNAIL_MEDIUM);
-            if (string.IsNullOrEmpty(playingFileImgLocation)) playingFileImgLocation = nowPlayingFile.GetImageFile(MJImageFileFlags.IMAGEFILE_DISPLAY);
-
-            if (enableCoverArt.Checked)
-            {
-                jrWin.EnableCustomWindowPreview();
-                setThumbnail(playingFileImgLocation);
-            }
-
-            jrWin.SetWindowTitle(displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText);
+            
         }
 
         [DllImport("dwmapi.dll", PreserveSig = false)]
@@ -521,7 +532,7 @@ namespace MC_Aero_Taskbar_Plugin
         private void setThumbnail(string currentFile)
         {
             // Can't imagine a thumnbail having much smaller size than this.
-            setThumbnail(currentFile, new Size(0, 0));
+            setThumbnail(currentFile, new Size(1, 1));
         }
 
         private void setThumbnail(string currentFile, Size thumbnailSize)
