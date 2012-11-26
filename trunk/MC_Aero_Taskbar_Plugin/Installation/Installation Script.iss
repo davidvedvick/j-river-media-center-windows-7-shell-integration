@@ -30,7 +30,7 @@ Name: "{group}\{cm:UninstallProgram, Plugin}"; Filename: "{uninstallexe}"
 Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; Flags: uninsdeletekey
 Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; ValueType: dword; ValueName: "IVersion"; ValueData: "00000001"; Flags: uninsdeletekey
 Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; ValueType: string; ValueName: "Company"; ValueData: "DeVed Computers"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; ValueType: string; ValueName: "Version"; ValueData: ".8"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; ValueType: string; ValueName: "Version"; ValueData: ".93"; Flags: uninsdeletekey
 Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; ValueType: string; ValueName: "URL"; ValueData: "www.devedcomputers.com"; Flags: uninsdeletekey
 Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; ValueType: string; ValueName: "Copyright"; ValueData: "Copyright (c) 2011, David Vedvick."; Flags: uninsdeletekey
 Root: HKLM; Subkey: "Software\J. River\Media Jukebox\Plugins\Interface\MC_Aero_Taskbar_Plugin"; ValueType: dword; ValueName: "PluginMode"; ValueData: "00000001"; Flags: uninsdeletekey

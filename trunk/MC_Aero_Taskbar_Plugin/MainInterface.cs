@@ -45,6 +45,7 @@ namespace MC_Aero_Taskbar_Plugin
         private IMJPlaybackAutomation playback;
         private Settings s = new Settings();
         private static JrMainWindow jrWin;
+        private static JumpListManager m_jumpList;
         //private static CustomWindowsManager cwm;
 
         #endregion
@@ -139,11 +140,9 @@ namespace MC_Aero_Taskbar_Plugin
                 initAll();
                 // This is the main entry for MC Automation
                 // The application ID is used to group windows together
-                //Windows7Taskbar.SetWindowAppId((IntPtr)mcRef.GetWindowHandle(), AppId);
-                //Windows7Taskbar.SetCurrentProcessAppId(AppId);
-                //txtUserInfo.Visible = true;
                 txtUserInfo.Visible = true;
                 addUserInfoText("Plugin Initiated OK");
+                m_jumpList = new JumpListManager((IntPtr)mcRef.GetWindowHandle());
                 jrWin = new JrMainWindow((IntPtr)mcRef.GetWindowHandle());
                 jrWin.RequestThumbnail += new JrMainWindow.JrEventHandler(jrWin_RequestThumbnail);
                 jrWin.RequestTrackProgressUpdate += new JrMainWindow.JrEventHandler(jrWin_RequestTrackProgressUpdate);
@@ -155,8 +154,8 @@ namespace MC_Aero_Taskbar_Plugin
                 };
                 oldWindowText = jrWin.GetWindowTitle();
                 setWindowsPreview();
-                //backgroundWorker1.RunWorkerAsync();
 
+                BuildPlaylistTree(mcRef.GetPlaylists());
             }
             catch (Exception e)
             {
@@ -164,7 +163,51 @@ namespace MC_Aero_Taskbar_Plugin
             }
         }
 
+        private void BuildPlaylistTree(IMJPlaylistsAutomation playlists)
+        {
+            tvPlaylists.Nodes.Clear();
+            TreeNode newNode;
 
+            IMJPlaylistAutomation currentPlaylist = playlists.GetPlaylist(-2);
+            tvPlaylists.Nodes.Add("Recently Imported");
+
+            currentPlaylist = playlists.GetPlaylist(-1);
+            tvPlaylists.Nodes.Add("Top Hits");
+
+            for (int i = 0; i < playlists.GetNumberPlaylists(); i++)
+            {
+                currentPlaylist = playlists.GetPlaylist(i);
+                if (String.IsNullOrEmpty(currentPlaylist.Path))
+                    newNode = AddUniqueNode(tvPlaylists.Nodes, playlists.GetPlaylist(i).Name);
+                else
+                    newNode = AddUniqueNode(GetFolderNode(tvPlaylists.Nodes, currentPlaylist.Path).Nodes, currentPlaylist.Name);
+
+                newNode.Tag = i;
+            }
+        }
+
+        private TreeNode GetFolderNode(TreeNodeCollection nodes, string path)
+        {
+            TreeNode returnNode = null;
+
+            string[] findPath = path.Split(new char[] { '\\' }, 2);
+
+            returnNode = AddUniqueNode(nodes, findPath[0]);
+            if (findPath[0] != path) return GetFolderNode(returnNode.Nodes, findPath[1]);
+
+            return returnNode;
+        }
+
+        private TreeNode AddUniqueNode(TreeNodeCollection nodes, string name)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Text == name)
+                    return node;
+            }
+
+            return nodes.Add(name);
+        }
 
         private void initAll()
         {
@@ -273,7 +316,7 @@ namespace MC_Aero_Taskbar_Plugin
                 setBackColor(control, getColor("Tree", "BackColor"));
                 setForeColor(control, getColor("Tree", "TextColor"));
 
-                control = mainPanel.GetNextControl(control, true);
+                control = this.GetNextControl(control, true);
             }
         }
 
@@ -290,7 +333,7 @@ namespace MC_Aero_Taskbar_Plugin
             try
             {
                 setMainInterfaceColors();
-                setAllColors(Panel);
+                setAllColors(this.Panel);
             }
             catch (Exception e)
             {
@@ -331,27 +374,12 @@ namespace MC_Aero_Taskbar_Plugin
                             break;
 
                         case "MCC: NOTIFY_PLAYLIST_ADDED":
-                            // Your code goes here
-                            break;
-
                         case "MCC: NOTIFY_PLAYLIST_INFO_CHANGED":
-                            // Your code goes here
-                            break;
-
                         case "MCC: NOTIFY_PLAYLIST_FILES_CHANGED":
-                            // Your code goes here
-                            break;
-
                         case "MCC: NOTIFY_PLAYLIST_REMOVED":
-                            // Your code goes here
-                            break;
-
                         case "MCC: NOTIFY_PLAYLIST_COLLECTION_CHANGED":
-                            // Your code goes here
-                            break;
-
                         case "MCC: NOTIFY_PLAYLIST_PROPERTIES_CHANGED":
-                            // Your code goes here
+                            BuildPlaylistTree(mcRef.GetPlaylists());
                             break;
 
                         case "MCC: NOTIFY_SKIN_CHANGED":
@@ -600,6 +628,62 @@ namespace MC_Aero_Taskbar_Plugin
         }
 
         #endregion
+
+        private void tvPlaylists_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            m_jumpList.AddCustomDestination(new jlDestination(e.Node.Text));
+        }
+
+        class jlDestination : IJumpListDestination
+        {
+            private string m_Category;
+            private string m_Title;
+            private string m_Path;
+
+            public string Category
+            {
+                get
+                {
+                    return m_Category;
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets the object's title.
+            /// </summary>
+            public string Title
+            {
+                get
+                {
+                    return m_Title;
+                }
+            }
+            /// <summary>
+            /// Gets or sets the object's path.
+            /// </summary>
+            public string Path
+            {
+                get
+                {
+                    return m_Path;
+                }
+            }
+
+            /// <summary>
+            /// Gets the shell representation of an object, such as
+            /// <b>IShellLink</b> or <b>IShellItem</b>.
+            /// </summary>
+            /// <returns></returns>
+            public object GetShellRepresentation()
+            {
+                return null;
+            }
+
+            public jlDestination(string category)
+            {
+                m_Category = category;
+            }
+        }
     }
 
     class JrMainWindow : NativeWindow
@@ -620,7 +704,7 @@ namespace MC_Aero_Taskbar_Plugin
         public const int SC_RESTORE = 0xF120;
         private const int GWL_WNDPROC = -4;
         private const int WM_DESTROY = 0x0002;
-        const UInt32 WS_MINIMIZE = 0x20000000;
+        private const UInt32 WS_MINIMIZE = 0x20000000;
         private const int GWL_STYLE = (-16);
         private const int WM_SIZE = 0x0005;
         private const int WM_MOVE = 0x0003;
