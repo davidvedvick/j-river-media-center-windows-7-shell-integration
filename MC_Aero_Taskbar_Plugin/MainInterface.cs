@@ -142,7 +142,10 @@ namespace MC_Aero_Taskbar_Plugin
                 // The application ID is used to group windows together
                 txtUserInfo.Visible = true;
                 addUserInfoText("Plugin Initiated OK");
+                
                 m_jumpList = new JumpListManager((IntPtr)mcRef.GetWindowHandle());
+                m_jumpList.UserRemovedItems += new EventHandler<UserRemovedItemsEventArgs>(m_jumpList_UserRemovedItems);
+
                 jrWin = new JrMainWindow((IntPtr)mcRef.GetWindowHandle());
                 jrWin.RequestThumbnail += new JrMainWindow.JrEventHandler(jrWin_RequestThumbnail);
                 jrWin.RequestTrackProgressUpdate += new JrMainWindow.JrEventHandler(jrWin_RequestTrackProgressUpdate);
@@ -163,6 +166,11 @@ namespace MC_Aero_Taskbar_Plugin
             }
         }
 
+        void m_jumpList_UserRemovedItems(object sender, UserRemovedItemsEventArgs e)
+        {
+            
+        }
+
         private void BuildPlaylistTree(IMJPlaylistsAutomation playlists)
         {
             tvPlaylists.Nodes.Clear();
@@ -177,11 +185,7 @@ namespace MC_Aero_Taskbar_Plugin
             for (int i = 0; i < playlists.GetNumberPlaylists(); i++)
             {
                 currentPlaylist = playlists.GetPlaylist(i);
-                if (String.IsNullOrEmpty(currentPlaylist.Path))
-                    newNode = AddUniqueNode(tvPlaylists.Nodes, playlists.GetPlaylist(i).Name);
-                else
-                    newNode = AddUniqueNode(GetFolderNode(tvPlaylists.Nodes, currentPlaylist.Path).Nodes, currentPlaylist.Name);
-
+                newNode = String.IsNullOrEmpty(currentPlaylist.Path) ? tvPlaylists.Nodes.AddUniqueNode(currentPlaylist.Name) : GetFolderNode(tvPlaylists.Nodes, currentPlaylist.Path).Nodes.AddUniqueNode(currentPlaylist.Name);
                 newNode.Tag = i;
             }
         }
@@ -192,22 +196,13 @@ namespace MC_Aero_Taskbar_Plugin
 
             string[] findPath = path.Split(new char[] { '\\' }, 2);
 
-            returnNode = AddUniqueNode(nodes, findPath[0]);
+            returnNode = nodes.AddUniqueNode(findPath[0]);
             if (findPath[0] != path) return GetFolderNode(returnNode.Nodes, findPath[1]);
 
             return returnNode;
         }
 
-        private TreeNode AddUniqueNode(TreeNodeCollection nodes, string name)
-        {
-            foreach (TreeNode node in nodes)
-            {
-                if (node.Text == name)
-                    return node;
-            }
-
-            return nodes.Add(name);
-        }
+       
 
         private void initAll()
         {
@@ -676,12 +671,15 @@ namespace MC_Aero_Taskbar_Plugin
             /// <returns></returns>
             public object GetShellRepresentation()
             {
+
                 return null;
             }
 
-            public jlDestination(string category)
+            public jlDestination(string title, string path)
             {
-                m_Category = category;
+                m_Category = "";
+                m_Title = title;
+                m_Path = path;
             }
         }
     }
@@ -802,6 +800,8 @@ namespace MC_Aero_Taskbar_Plugin
             base.WndProc(ref m);
         }
 
+        
+
         #region Windows 7 Thumbnail Wrapper Classes
         public void EnableCustomWindowPreview()
         {
@@ -874,5 +874,19 @@ namespace MC_Aero_Taskbar_Plugin
             this.thumbnailSize = thumbnailSize;
         }
 
+    }
+
+    public static class TreeNodeExtensions
+    {
+        public static TreeNode AddUniqueNode(this TreeNodeCollection nodes, string name)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Text == name)
+                    return node;
+            }
+
+            return nodes.Add(name);
+        }
     }
 }
