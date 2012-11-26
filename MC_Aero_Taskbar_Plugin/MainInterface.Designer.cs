@@ -29,6 +29,8 @@ namespace MC_Aero_Taskbar_Plugin
         private void InitializeComponent()
         {
             this.Panel = new System.Windows.Forms.Panel();
+            this.tvPlaylists = new System.Windows.Forms.TreeView();
+            this.lblPlaylists = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.txtUserInfo = new System.Windows.Forms.TextBox();
             this.displayArtistTrackName = new System.Windows.Forms.CheckBox();
@@ -53,6 +55,8 @@ namespace MC_Aero_Taskbar_Plugin
             this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.Controls.Add(this.tvPlaylists);
+            this.Panel.Controls.Add(this.lblPlaylists);
             this.Panel.Controls.Add(this.label1);
             this.Panel.Controls.Add(this.txtUserInfo);
             this.Panel.Controls.Add(this.displayArtistTrackName);
@@ -63,6 +67,27 @@ namespace MC_Aero_Taskbar_Plugin
             this.Panel.Size = new System.Drawing.Size(886, 594);
             this.Panel.TabIndex = 0;
             this.Panel.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel_Paint);
+            // 
+            // tvPlaylists
+            // 
+            this.tvPlaylists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tvPlaylists.CheckBoxes = true;
+            this.tvPlaylists.Location = new System.Drawing.Point(371, 47);
+            this.tvPlaylists.Name = "tvPlaylists";
+            this.tvPlaylists.Size = new System.Drawing.Size(498, 453);
+            this.tvPlaylists.TabIndex = 12;
+            this.tvPlaylists.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvPlaylists_AfterCheck);
+            // 
+            // lblPlaylists
+            // 
+            this.lblPlaylists.AutoSize = true;
+            this.lblPlaylists.Location = new System.Drawing.Point(368, 13);
+            this.lblPlaylists.Name = "lblPlaylists";
+            this.lblPlaylists.Size = new System.Drawing.Size(84, 13);
+            this.lblPlaylists.TabIndex = 11;
+            this.lblPlaylists.Text = "Jumplist Playlists";
             // 
             // label1
             // 
@@ -207,6 +232,7 @@ namespace MC_Aero_Taskbar_Plugin
             this.DoubleBuffered = true;
             this.Name = "MainInterface";
             this.Size = new System.Drawing.Size(886, 594);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             this.Panel.ResumeLayout(false);
             this.Panel.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -233,6 +259,8 @@ namespace MC_Aero_Taskbar_Plugin
         private System.Windows.Forms.RadioButton noProgressTrack;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtUserInfo;
+        private System.Windows.Forms.Label lblPlaylists;
+        private System.Windows.Forms.TreeView tvPlaylists;
 
     }
 }
