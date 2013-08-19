@@ -17,7 +17,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -32,14 +32,14 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files %28x86%29\J River\Media Center 16\Plugins\MC_Aero_Taskbar_Plugin\</OutputPath>
+    <OutputPath>C:\Program Files %28x86%29\J River\Media Center 18\Plugins\MC_Aero_Taskbar_Plugin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -69,10 +69,9 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
-    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -82,6 +81,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JrMainWindow.cs" />
+    <Compile Include="JumplistDestination.cs" />
     <Compile Include="ScreenCapture.cs" />
     <Compile Include="MainInterface.cs">
       <SubType>UserControl</SubType>
@@ -181,6 +182,18 @@
     <ProjectReference Include="..\Windows7.DesktopIntegration\Windows7.DesktopIntegration.csproj">
       <Project>{E3F064A7-ECEF-46B8-83BD-299E4E8BDF82}</Project>
       <Name>Windows7.DesktopIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="lib\Core\Core.csproj">
+      <Project>{2e1fb0df-f9bb-4909-9f32-2d9d022a8e57}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="lib\ShellExtensions\ShellExtensions.csproj">
+      <Project>{f3c863ec-33f4-4ed2-9d67-00bf3eeeab64}</Project>
+      <Name>ShellExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="lib\Shell\Shell.csproj">
+      <Project>{aa0c00cb-8699-4f37-bfae-40ca87acc06d}</Project>
+      <Name>Shell</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
