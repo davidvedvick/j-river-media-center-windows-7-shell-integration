@@ -66,7 +66,6 @@ namespace MC_Aero_Taskbar_Plugin
             this.Panel.Name = "Panel";
             this.Panel.Size = new System.Drawing.Size(886, 594);
             this.Panel.TabIndex = 0;
-            this.Panel.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel_Paint);
             // 
             // tvPlaylists
             // 

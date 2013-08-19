@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 using System.IO;
 using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.Interop;
-using System.Design;
 using MediaCenter;
 using System.Drawing.Drawing2D;
 using Windows7.DesktopIntegration.WindowsForms;
@@ -21,7 +20,8 @@ using System.Threading;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using MC_Aero_Taskbar_Plugin;
-//using Microsoft.WindowsAPICodePack;
+using Microsoft.WindowsAPICodePack.Taskbar;
+using System.Reflection;
 #endregion
 
 namespace MC_Aero_Taskbar_Plugin
@@ -37,7 +37,7 @@ namespace MC_Aero_Taskbar_Plugin
         #region Attributes
 
         private MediaCenter.MCAutomation mcRef;
-        private static string AppId = "MC_Jumpbar";
+        private static string appId = "MC_Jumpbar";
         public IntPtr oldWndProc = IntPtr.Zero;
         private string oldWindowText;
         private IMJFileAutomation nowPlayingFile;
@@ -45,7 +45,8 @@ namespace MC_Aero_Taskbar_Plugin
         private IMJPlaybackAutomation playback;
         private Settings s = new Settings();
         private static JrMainWindow jrWin;
-        private static JumpListManager m_jumpList;
+        private static JumpList jumpList;
+        private string exePath;
         //private static CustomWindowsManager cwm;
 
         #endregion
@@ -56,8 +57,6 @@ namespace MC_Aero_Taskbar_Plugin
         private static extern bool GetWindowRect(IntPtr hWnd, ref Rectangle rect);
         [DllImport("user32")]
         private static extern int CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, int lParam);
-        [DllImport("user32")]
-        private static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, Win32WndProc newProc);
         [DllImport("user32")]
         private static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr newProc);
         [DllImport("user32.dll", SetLastError = true)]
@@ -75,10 +74,6 @@ namespace MC_Aero_Taskbar_Plugin
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string className, IntPtr windowTitle);
 
-        #endregion
-
-        #region Delegates
-        private delegate int Win32WndProc(IntPtr hWnd, int Msg, int wParam, int lParam);
         #endregion
 
         #region Constructor
@@ -142,10 +137,10 @@ namespace MC_Aero_Taskbar_Plugin
                 // The application ID is used to group windows together
                 txtUserInfo.Visible = true;
                 addUserInfoText("Plugin Initiated OK");
-                
-                m_jumpList = new JumpListManager((IntPtr)mcRef.GetWindowHandle());
-                m_jumpList.UserRemovedItems += new EventHandler<UserRemovedItemsEventArgs>(m_jumpList_UserRemovedItems);
 
+                exePath = Environment.CurrentDirectory;
+                jumpList = JumpList.CreateJumpList();
+                
                 jrWin = new JrMainWindow((IntPtr)mcRef.GetWindowHandle());
                 jrWin.RequestThumbnail += new JrMainWindow.JrEventHandler(jrWin_RequestThumbnail);
                 jrWin.RequestTrackProgressUpdate += new JrMainWindow.JrEventHandler(jrWin_RequestTrackProgressUpdate);
@@ -186,7 +181,7 @@ namespace MC_Aero_Taskbar_Plugin
             {
                 currentPlaylist = playlists.GetPlaylist(i);
                 newNode = String.IsNullOrEmpty(currentPlaylist.Path) ? tvPlaylists.Nodes.AddUniqueNode(currentPlaylist.Name) : GetFolderNode(tvPlaylists.Nodes, currentPlaylist.Path).Nodes.AddUniqueNode(currentPlaylist.Name);
-                newNode.Tag = i;
+                newNode.Tag = currentPlaylist.Path + "\\" + currentPlaylist.Name;
             }
         }
 
@@ -319,7 +314,7 @@ namespace MC_Aero_Taskbar_Plugin
         private void setMainInterfaceColors()
         {
             this.BackColor = getColor("Tree", "BackColor");
-            this.ForeColor = getColor("Tree", "TextColor");
+            this.ForeColor = getColor("Tree", "Text");
         }
 
         // Pseude Skin our Plugin
@@ -398,17 +393,6 @@ namespace MC_Aero_Taskbar_Plugin
         #endregion
 
         #region Plug-in Form Handlers
-        private void txtUserInfo_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void Panel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
         {
             s.enableCoverArt = ((CheckBox)sender).Checked;
@@ -455,9 +439,13 @@ namespace MC_Aero_Taskbar_Plugin
             s.Save();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void tvPlaylists_AfterCheck(object sender, TreeViewEventArgs e)
         {
-
+            string link = "MC" + mcRef.GetVersion().Major.ToString() + ".exe";
+            JumpListLink item = new JumpListLink(link, e.Node.Text);
+            item.Arguments = "/Play TREEPATH=\"Playlists\\" + e.Node.Tag.ToString().TrimStart('\\') + "\"";
+            jumpList.AddUserTasks(item);
+            jumpList.Refresh();
         }
         #endregion
 
@@ -544,6 +532,7 @@ namespace MC_Aero_Taskbar_Plugin
                 case MJPlaybackStates.PLAYSTATE_WAITING:
                     jrWin.SetProgressValue(0, 1);
                     jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Indeterminate);
+                    nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
                     jrWin.SetWindowTitle(displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText);
                     break;
             }
@@ -564,12 +553,9 @@ namespace MC_Aero_Taskbar_Plugin
             {
                 if (!string.IsNullOrEmpty(currentFile))
                 {
-                    Image coverArt = Image.FromFile(currentFile);
-                    //addUserInfoText("getting image thumbnail at: " + currentFile);
-                    coverArt = resizeImage(coverArt, thumbnailSize);
-                    //addUserInfoText(coverArtFile.ToString());
-                    jrWin.SetThumbnailPreview((Bitmap)coverArt);                    
-                    coverArt.Dispose();
+                    using (Image coverArt = Image.FromFile(currentFile))
+                    using (Bitmap resizedImg = resizeImage(coverArt, thumbnailSize))
+                        jrWin.SetThumbnailPreview(resizedImg);
                 }
             }
             catch (Exception ex)
@@ -623,257 +609,6 @@ namespace MC_Aero_Taskbar_Plugin
         }
 
         #endregion
-
-        private void tvPlaylists_AfterCheck(object sender, TreeViewEventArgs e)
-        {
-            m_jumpList.AddCustomDestination(new jlDestination(e.Node.Text));
-        }
-
-        class jlDestination : IJumpListDestination
-        {
-            private string m_Category;
-            private string m_Title;
-            private string m_Path;
-
-            public string Category
-            {
-                get
-                {
-                    return m_Category;
-                }
-            }
-
-            /// <summary>
-            /// Gets or sets the object's title.
-            /// </summary>
-            public string Title
-            {
-                get
-                {
-                    return m_Title;
-                }
-            }
-            /// <summary>
-            /// Gets or sets the object's path.
-            /// </summary>
-            public string Path
-            {
-                get
-                {
-                    return m_Path;
-                }
-            }
-
-            /// <summary>
-            /// Gets the shell representation of an object, such as
-            /// <b>IShellLink</b> or <b>IShellItem</b>.
-            /// </summary>
-            /// <returns></returns>
-            public object GetShellRepresentation()
-            {
-
-                return null;
-            }
-
-            public jlDestination(string title, string path)
-            {
-                m_Category = "";
-                m_Title = title;
-                m_Path = path;
-            }
-        }
-    }
-
-    class JrMainWindow : NativeWindow
-    {
-        #region Attributes
-        private static Bitmap WindowsPeak;
-        private bool IsMinimized = false;
-        private bool PreviewEnabled = false;
-        private ScreenCapture sc = new ScreenCapture();
-        private bool CaptureWindow = false;
-        #endregion
-
-        #region Constants
-        public const int WM_DWMSENDICONICTHUMBNAIL = 0x0323;
-        public const int WM_DWMSENDICONICLIVEPREVIEWBITMAP = 0x0326;
-        public const int WM_SYSCOMMAND = 0x0112;
-        public const int SC_MINIMIZE = 0xF020;
-        public const int SC_RESTORE = 0xF120;
-        private const int GWL_WNDPROC = -4;
-        private const int WM_DESTROY = 0x0002;
-        private const UInt32 WS_MINIMIZE = 0x20000000;
-        private const int GWL_STYLE = (-16);
-        private const int WM_SIZE = 0x0005;
-        private const int WM_MOVE = 0x0003;
-        private const int WM_EXITSIZEMOVE = 0x0232;
-        private const int WM_CLOSE = 0x0010;
-        private const int SC_CLOSE = 0xF060;
-        #endregion
-
-        #region delegates
-        public delegate void JrEventHandler(object sender, EventArgs e);
-        #endregion
-
-        #region Events
-        public event JrEventHandler RequestThumbnail;
-        public event JrEventHandler RequestTrackProgressUpdate;
-        public event JrEventHandler WindowClosing;
-        #endregion
-
-        #region Pinvokes
-        [DllImport("user32.dll")]
-        private static extern int SetWindowText(IntPtr hWnd, string text);
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmInvalidateIconicBitmaps(IntPtr hwnd);
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-        #endregion
-
-        public JrMainWindow(IntPtr handle)
-            : base()
-        {
-            this.AssignHandle(handle);
-            int lStyles = GetWindowLong(this.Handle, GWL_STYLE);
-            if ((GetWindowLong(this.Handle, GWL_STYLE) & WS_MINIMIZE) == 0)
-                WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            if (CaptureWindow && PreviewEnabled)
-            {
-                if (WindowsPeak != null) WindowsPeak.Dispose();
-                WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
-                CaptureWindow = false;
-            }
-            switch (m.Msg)
-            {
-                case (WM_SYSCOMMAND):
-                    if ((int)m.WParam == SC_CLOSE && WindowClosing != null)
-                    {
-                        WindowClosing(this, EventArgs.Empty);
-                        break;
-                    }
-
-                    IsMinimized = (int)m.WParam == SC_MINIMIZE;
-
-                    if (PreviewEnabled)
-                    {
-                        if (WindowsPeak != null) WindowsPeak.Dispose();
-                        WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
-                    }
-                    break;
-                case WM_DWMSENDICONICLIVEPREVIEWBITMAP:
-                    if (!IsMinimized)
-                    {
-                        if (WindowsPeak != null) WindowsPeak.Dispose();
-                        WindowsPeak = (Bitmap)sc.CaptureWindow(this.Handle);
-                    }
-                    Windows7Taskbar.SetPeekBitmap(this.Handle, WindowsPeak, false);
-                    break;
-                case WM_DWMSENDICONICTHUMBNAIL:
-                    if (RequestThumbnail != null)
-                    {
-                        int width = (int)((long)m.LParam >> 16);
-                        int height = (int)(((long)m.LParam) & (0xFFFF));
-                        JrThumbArgs args = new JrThumbArgs(new Size(width, height));
-                        RequestThumbnail(this, args);
-                        SetThumbnailPreview(args.thumbBmp);
-                        args.thumbBmp.Dispose();
-                    }
-                    break;
-                case WM_CLOSE:
-                    if (WindowClosing != null)
-                        WindowClosing(this, EventArgs.Empty);
-                    break;
-                default:
-                    break;
-            }
-
-            DwmInvalidateIconicBitmaps(this.Handle);
-
-            if (RequestTrackProgressUpdate != null)
-                RequestTrackProgressUpdate(this, EventArgs.Empty);
-            base.WndProc(ref m);
-        }
-
-        
-
-        #region Windows 7 Thumbnail Wrapper Classes
-        public void EnableCustomWindowPreview()
-        {
-            PreviewEnabled = true;
-            Windows7Taskbar.EnableCustomWindowPreview(this.Handle);
-        }
-
-        public void DisableCustomWindowPreview()
-        {
-            PreviewEnabled = false;
-            Windows7Taskbar.DisableCustomWindowPreview(this.Handle);
-        }
-
-        public void SetProgressState(Windows7Taskbar.ThumbnailProgressState progressState)
-        {
-            Windows7Taskbar.SetProgressState(this.Handle, progressState);
-
-        }
-
-        public void SetProgressValue(int current, int maximum)
-        {
-            Windows7Taskbar.SetProgressValue(this.Handle, (ulong)current, (ulong)maximum);
-        }
-
-        public void SetWindowTitle(string title)
-        {
-            SetWindowText(this.Handle, title);
-        }
-
-        public string GetWindowTitle()
-        {
-            StringBuilder sb = new StringBuilder();
-            GetWindowText(this.Handle, sb, sb.Capacity);
-            return sb.ToString();
-        }
-
-        public void SetThumbnailPreview(Bitmap thumbBmp)
-        {
-            Windows7Taskbar.SetIconicThumbnail(this.Handle, thumbBmp);
-        }
-
-        private void cwm_PeekRequested(object sender, BitmapRequestedEventArgs e)
-        {
-            e.DisplayFrameAroundBitmap = false;
-            e.DoNotMirrorBitmap = false;
-            e.UseWindowScreenshot = true;
-        }
-
-        private void cwm_ThumbnailRequested(object sender, BitmapRequestedEventArgs e)
-        {
-            e.DoNotMirrorBitmap = true;
-            if (RequestThumbnail != null)
-            {
-                JrThumbArgs args = new JrThumbArgs(new Size(e.Width, e.Height));
-                RequestThumbnail(this, args);
-                e.Bitmap = args.thumbBmp;
-            }
-        }
-
-        #endregion
-    }
-
-    class JrThumbArgs : EventArgs
-    {
-        public readonly Size thumbnailSize;
-        public Bitmap thumbBmp;
-
-        public JrThumbArgs(Size thumbnailSize)
-        {
-            this.thumbnailSize = thumbnailSize;
-        }
-
     }
 
     public static class TreeNodeExtensions
