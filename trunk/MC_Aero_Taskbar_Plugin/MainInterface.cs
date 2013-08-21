@@ -45,10 +45,12 @@ namespace MC_Aero_Taskbar_Plugin
         private string playingFileImgLocation;
         private IMJPlaybackAutomation playback;
         private Settings settings = new Settings();
-        private AppSettings<McAeroTaskbarSettings> appSettings = new AppSettings<McAeroTaskbarSettings>();
+        private AppSettings<McAeroTaskbarSettings> appSettings;
         private static JrMainWindow jrWin;
         private static JumpList jumpList;
         private string exePath;
+        private const string RECENTLY_IMPORTED = "Recently Imported";
+        private const string TOP_HITS = "Top Hits";
         //private static CustomWindowsManager cwm;
 
         #endregion
@@ -135,6 +137,9 @@ namespace MC_Aero_Taskbar_Plugin
                 playback = mcRef.GetPlayback();
                 // Init our plugin
                 initAll();
+
+                
+
                 // This is the main entry for MC Automation
                 // The application ID is used to group windows together
                 txtUserInfo.Visible = true;
@@ -155,6 +160,26 @@ namespace MC_Aero_Taskbar_Plugin
                 oldWindowText = jrWin.GetWindowTitle();
                 setWindowsPreview();
 
+                string appSettingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "mc_aero_taskbar_plugin");
+                if (!Directory.Exists(appSettingsFile)) Directory.CreateDirectory(appSettingsFile);
+                appSettingsFile = Path.Combine(appSettingsFile, "settings.jsn");
+                appSettings = new AppSettings<McAeroTaskbarSettings>(appSettingsFile);
+
+                if (!File.Exists(appSettingsFile))
+                {
+                    appSettings.Settings.DisplayArtistTrackName = settings.displayArtistTrackName;
+                    appSettings.Settings.EnableCoverArt = settings.enableCoverArt;
+                    appSettings.Settings.NoProgressTrack = settings.noProgressTrack;
+                    appSettings.Settings.PlaylistProgress = settings.playlistProgress;
+                    appSettings.Settings.TrackProgress = settings.trackProgress;
+                    appSettings.Save();
+                }
+
+                enableCoverArt.Checked = appSettings.Settings.EnableCoverArt;
+                displayArtistTrackName.Checked = appSettings.Settings.DisplayArtistTrackName;
+                trackProgress.Checked = appSettings.Settings.TrackProgress;
+                playlistProgress.Checked = appSettings.Settings.PlaylistProgress;
+                noProgressTrack.Checked = appSettings.Settings.NoProgressTrack;
                 BuildPlaylistTree(mcRef.GetPlaylists());
             }
             catch (Exception e)
@@ -174,16 +199,21 @@ namespace MC_Aero_Taskbar_Plugin
             TreeNode newNode;
 
             IMJPlaylistAutomation currentPlaylist = playlists.GetPlaylist(-2);
-            tvPlaylists.Nodes.Add("Recently Imported");
+            newNode = tvPlaylists.Nodes.Add(RECENTLY_IMPORTED);
+            newNode.Tag = RECENTLY_IMPORTED;
+            newNode.Checked = appSettings.Settings.PinnedPlaylists.Contains(RECENTLY_IMPORTED);
 
             currentPlaylist = playlists.GetPlaylist(-1);
-            tvPlaylists.Nodes.Add("Top Hits");
+            newNode = tvPlaylists.Nodes.Add(TOP_HITS);
+            newNode.Tag = TOP_HITS;
+            newNode.Checked = appSettings.Settings.PinnedPlaylists.Contains(TOP_HITS);
 
             for (int i = 0; i < playlists.GetNumberPlaylists(); i++)
             {
                 currentPlaylist = playlists.GetPlaylist(i);
                 newNode = String.IsNullOrEmpty(currentPlaylist.Path) ? tvPlaylists.Nodes.AddUniqueNode(currentPlaylist.Name) : GetFolderNode(tvPlaylists.Nodes, currentPlaylist.Path).Nodes.AddUniqueNode(currentPlaylist.Name);
                 newNode.Tag = currentPlaylist.Path + "\\" + currentPlaylist.Name;
+                newNode.Checked = appSettings.Settings.PinnedPlaylists.Contains(newNode.Tag.ToString());
             }
         }
 
@@ -403,24 +433,9 @@ namespace MC_Aero_Taskbar_Plugin
 
         protected override void OnLoad(EventArgs e)
         {
-            if (!File.Exists("settings.jsn"))
-            {
-                appSettings = new AppSettings<McAeroTaskbarSettings>();
-                appSettings.Settings.DisplayArtistTrackName = settings.displayArtistTrackName;
-                appSettings.Settings.EnableCoverArt = settings.enableCoverArt;
-                appSettings.Settings.NoProgressTrack = settings.noProgressTrack;
-                appSettings.Settings.PlaylistProgress = settings.playlistProgress;
-                appSettings.Settings.TrackProgress = settings.trackProgress;
-                appSettings.Save();
-            }
+            
+            
 
-            appSettings = new AppSettings<McAeroTaskbarSettings>();
-
-            enableCoverArt.Checked = appSettings.Settings.EnableCoverArt;
-            displayArtistTrackName.Checked = appSettings.Settings.DisplayArtistTrackName;
-            trackProgress.Checked = appSettings.Settings.TrackProgress;
-            playlistProgress.Checked = appSettings.Settings.PlaylistProgress;
-            noProgressTrack.Checked = appSettings.Settings.NoProgressTrack;
             base.OnLoad(e);
         }
 
@@ -457,10 +472,28 @@ namespace MC_Aero_Taskbar_Plugin
 
         private void tvPlaylists_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            string link = "MC" + mcRef.GetVersion().Major.ToString() + ".exe";
-            JumpListLink item = new JumpListLink(link, e.Node.Text);
-            item.Arguments = "/Play TREEPATH=\"Playlists\\" + e.Node.Tag.ToString().TrimStart('\\') + "\"";
-            jumpList.AddUserTasks(item);
+            if (e.Node.Checked)
+            {
+                appSettings.Settings.PinnedPlaylists.Add(e.Node.Tag.ToString());
+            }
+            else
+            {
+                appSettings.Settings.PinnedPlaylists.Remove(e.Node.Tag.ToString());
+            }
+            appSettings.Save();
+            refreshUserTasks();
+        }
+
+        private void refreshUserTasks()
+        {
+            jumpList.ClearAllUserTasks();
+            foreach (string playlistPath in appSettings.Settings.PinnedPlaylists)
+            {
+                string link = "MC" + mcRef.GetVersion().Major.ToString() + ".exe";
+                JumpListLink item = new JumpListLink(link, playlistPath);
+                item.Arguments = "/Play TREEPATH=\"Playlists\\" + playlistPath.TrimStart('\\') + "\"";
+                jumpList.AddUserTasks(item);
+            }
             jumpList.Refresh();
         }
         #endregion
@@ -639,6 +672,21 @@ namespace MC_Aero_Taskbar_Plugin
             public bool PlaylistProgress;
             [DataMember]
             public bool NoProgressTrack;
+            [DataMember]
+            private HashSet<string> _pinnedPlaylists;
+
+            public HashSet<string> PinnedPlaylists
+            {
+                get
+                {
+                    if (_pinnedPlaylists == null) _pinnedPlaylists = new HashSet<string>(StringComparer.Ordinal);
+                    return _pinnedPlaylists;
+                }
+                set
+                {
+                    _pinnedPlaylists = value;
+                }
+            }
         }
     }
 

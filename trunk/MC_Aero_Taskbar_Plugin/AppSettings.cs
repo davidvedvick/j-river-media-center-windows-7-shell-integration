@@ -11,6 +11,7 @@ namespace MC_Aero_Taskbar_Plugin
     public class AppSettings<T> where T : new()
     {
         private const string DEFAULT_FILENAME = "settings.jsn";
+        private string _fileName;
 
         private T _settings;
 
@@ -25,12 +26,13 @@ namespace MC_Aero_Taskbar_Plugin
 
         public AppSettings(string fileName = DEFAULT_FILENAME)
         {
-            _settings = Load(fileName);
+            _fileName = fileName;
+            _settings = Load(_fileName);
         }
 
-        public void Save(string fileName = DEFAULT_FILENAME)
+        public void Save()
         {
-            Save(_settings, fileName);
+            Save(_settings, _fileName);
         }
 
         public static void Save(T pSettings, string fileName = DEFAULT_FILENAME)
@@ -47,7 +49,7 @@ namespace MC_Aero_Taskbar_Plugin
             T t = new T();
             if (File.Exists(fileName))
             {
-                using (FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate))
+                using (FileStream fs = new FileStream(fileName, FileMode.Open))
                 {
                     DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T));
                     t = (T)ser.ReadObject(fs);
