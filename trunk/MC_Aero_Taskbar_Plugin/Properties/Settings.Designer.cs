@@ -82,5 +82,16 @@ namespace MC_Aero_Taskbar_Plugin.Properties {
                 this["noProgressTrack"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection TreeItems {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["TreeItems"]));
+            }
+            set {
+                this["TreeItems"] = value;
+            }
+        }
     }
 }
