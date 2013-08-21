@@ -22,6 +22,7 @@ using System.Drawing.Imaging;
 using MC_Aero_Taskbar_Plugin;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using System.Reflection;
+using System.Runtime.Serialization;
 #endregion
 
 namespace MC_Aero_Taskbar_Plugin
@@ -43,7 +44,8 @@ namespace MC_Aero_Taskbar_Plugin
         private IMJFileAutomation nowPlayingFile;
         private string playingFileImgLocation;
         private IMJPlaybackAutomation playback;
-        private Settings s = new Settings();
+        private Settings settings = new Settings();
+        private AppSettings<McAeroTaskbarSettings> appSettings = new AppSettings<McAeroTaskbarSettings>();
         private static JrMainWindow jrWin;
         private static JumpList jumpList;
         private string exePath;
@@ -393,13 +395,7 @@ namespace MC_Aero_Taskbar_Plugin
         #endregion
 
         #region Plug-in Form Handlers
-        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
-        {
-            s.enableCoverArt = ((CheckBox)sender).Checked;
-            s.Save();
-            setWindowsPreview();
-        }
-
+        
         protected override void OnHandleDestroyed(EventArgs e)
         {
             base.OnHandleDestroyed(e);
@@ -407,36 +403,56 @@ namespace MC_Aero_Taskbar_Plugin
 
         protected override void OnLoad(EventArgs e)
         {
-            enableCoverArt.Checked = s.enableCoverArt;
-            displayArtistTrackName.Checked = s.displayArtistTrackName;
-            trackProgress.Checked = s.trackProgress;
-            playlistProgress.Checked = s.playlistProgress;
-            noProgressTrack.Checked = s.noProgressTrack;
+            if (!File.Exists("settings.jsn"))
+            {
+                appSettings = new AppSettings<McAeroTaskbarSettings>();
+                appSettings.Settings.DisplayArtistTrackName = settings.displayArtistTrackName;
+                appSettings.Settings.EnableCoverArt = settings.enableCoverArt;
+                appSettings.Settings.NoProgressTrack = settings.noProgressTrack;
+                appSettings.Settings.PlaylistProgress = settings.playlistProgress;
+                appSettings.Settings.TrackProgress = settings.trackProgress;
+                appSettings.Save();
+            }
+
+            appSettings = new AppSettings<McAeroTaskbarSettings>();
+
+            enableCoverArt.Checked = appSettings.Settings.EnableCoverArt;
+            displayArtistTrackName.Checked = appSettings.Settings.DisplayArtistTrackName;
+            trackProgress.Checked = appSettings.Settings.TrackProgress;
+            playlistProgress.Checked = appSettings.Settings.PlaylistProgress;
+            noProgressTrack.Checked = appSettings.Settings.NoProgressTrack;
             base.OnLoad(e);
+        }
+
+        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
+        {
+            appSettings.Settings.EnableCoverArt = ((CheckBox)sender).Checked;
+            appSettings.Save();
+            setWindowsPreview();
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            s.displayArtistTrackName = ((CheckBox)sender).Checked;
-            s.Save();
+            appSettings.Settings.DisplayArtistTrackName = ((CheckBox)sender).Checked;
+            appSettings.Save();
         }
 
         private void trackProgress_CheckedChanged(object sender, EventArgs e)
         {
-            s.trackProgress = ((RadioButton)sender).Checked;
-            s.Save();
+            appSettings.Settings.TrackProgress = ((RadioButton)sender).Checked;
+            appSettings.Save();
         }
 
         private void playlistProgress_CheckedChanged(object sender, EventArgs e)
         {
-            s.playlistProgress = ((RadioButton)sender).Checked;
-            s.Save();
+            appSettings.Settings.PlaylistProgress = ((RadioButton)sender).Checked;
+            appSettings.Save();
         }
 
         private void noProgressTrack_CheckedChanged(object sender, EventArgs e)
         {
-            s.noProgressTrack = ((RadioButton)sender).Checked;
-            s.Save();
+            appSettings.Settings.NoProgressTrack = ((RadioButton)sender).Checked;
+            appSettings.Save();
         }
 
         private void tvPlaylists_AfterCheck(object sender, TreeViewEventArgs e)
@@ -609,6 +625,21 @@ namespace MC_Aero_Taskbar_Plugin
         }
 
         #endregion
+
+        [DataContract]
+        private class McAeroTaskbarSettings
+        {
+            [DataMember]
+            public bool EnableCoverArt;
+            [DataMember]
+            public bool DisplayArtistTrackName;
+            [DataMember]
+            public bool TrackProgress;
+            [DataMember]
+            public bool PlaylistProgress;
+            [DataMember]
+            public bool NoProgressTrack;
+        }
     }
 
     public static class TreeNodeExtensions
