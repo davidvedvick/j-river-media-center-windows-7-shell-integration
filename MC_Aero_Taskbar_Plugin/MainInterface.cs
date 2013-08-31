@@ -51,6 +51,7 @@ namespace MC_Aero_Taskbar_Plugin
         private string exePath;
         private const string RECENTLY_IMPORTED = "Recently Imported";
         private const string TOP_HITS = "Top Hits";
+        private JumpListCustomCategory playlistCategory;
         //private static CustomWindowsManager cwm;
 
         #endregion
@@ -146,7 +147,6 @@ namespace MC_Aero_Taskbar_Plugin
                 addUserInfoText("Plugin Initiated OK");
 
                 exePath = Environment.CurrentDirectory;
-                jumpList = JumpList.CreateJumpList();
                 
                 jrWin = new JrMainWindow((IntPtr)mcRef.GetWindowHandle());
                 jrWin.RequestThumbnail += new JrMainWindow.JrEventHandler(jrWin_RequestThumbnail);
@@ -159,6 +159,11 @@ namespace MC_Aero_Taskbar_Plugin
                 };
                 oldWindowText = jrWin.GetWindowTitle();
                 setWindowsPreview();
+
+                jumpList = JumpList.CreateJumpList();
+                playlistCategory = new JumpListCustomCategory("Playlists");
+                jumpList.ClearAllUserTasks();
+                jumpList.AddCustomCategories(playlistCategory);
 
                 string appSettingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "mc_aero_taskbar_plugin");
                 if (!Directory.Exists(appSettingsFile)) Directory.CreateDirectory(appSettingsFile);
@@ -487,13 +492,15 @@ namespace MC_Aero_Taskbar_Plugin
         private void refreshUserTasks()
         {
             jumpList.ClearAllUserTasks();
+            playlistCategory.ClearJumplist();
             foreach (string playlistPath in appSettings.Settings.PinnedPlaylists)
             {
                 string link = "MC" + mcRef.GetVersion().Major.ToString() + ".exe";
-                JumpListLink item = new JumpListLink(link, playlistPath);
+                JumpListLink item = new JumpListLink(link, playlistPath.Remove(0, playlistPath.LastIndexOf('\\') + 1));
                 item.Arguments = "/Play TREEPATH=\"Playlists\\" + playlistPath.TrimStart('\\') + "\"";
-                jumpList.AddUserTasks(item);
+                playlistCategory.AddJumpListItems(item);
             }
+            
             jumpList.Refresh();
         }
         #endregion
