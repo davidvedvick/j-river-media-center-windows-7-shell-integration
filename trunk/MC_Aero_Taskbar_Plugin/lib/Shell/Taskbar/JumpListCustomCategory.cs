@@ -52,6 +52,11 @@ namespace Microsoft.WindowsAPICodePack.Taskbar
             }
         }
 
+        public void ClearJumplist()
+        {
+            JumpListItems.Clear();
+        }
+
         /// <summary>
         /// Event that is triggered when the jump list collection is modified
         /// </summary>
