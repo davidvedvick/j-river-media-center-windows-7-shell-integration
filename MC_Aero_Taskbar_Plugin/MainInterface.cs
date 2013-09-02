@@ -493,12 +493,16 @@ namespace MC_Aero_Taskbar_Plugin
         {
             jumpList.ClearAllUserTasks();
             playlistCategory.ClearJumplist();
+
+            lblItemCountWarning.Visible = false;
+            int i = 0;
             foreach (string playlistPath in appSettings.Settings.PinnedPlaylists)
             {
                 string link = "MC" + mcRef.GetVersion().Major.ToString() + ".exe";
                 JumpListLink item = new JumpListLink(link, playlistPath.Remove(0, playlistPath.LastIndexOf('\\') + 1));
                 item.Arguments = "/Play TREEPATH=\"Playlists\\" + playlistPath.TrimStart('\\') + "\"";
                 playlistCategory.AddJumpListItems(item);
+                if (++i > jumpList.MaxSlotsInList) lblItemCountWarning.Visible = true;
             }
             
             jumpList.Refresh();
