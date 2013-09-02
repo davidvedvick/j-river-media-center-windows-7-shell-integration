@@ -45,6 +45,7 @@ namespace MC_Aero_Taskbar_Plugin
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.lblItemCountWarning = new System.Windows.Forms.Label();
             this.Panel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.mainPanel.SuspendLayout();
@@ -52,9 +53,10 @@ namespace MC_Aero_Taskbar_Plugin
             // 
             // Panel
             // 
-            this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.Controls.Add(this.lblItemCountWarning);
             this.Panel.Controls.Add(this.tvPlaylists);
             this.Panel.Controls.Add(this.lblPlaylists);
             this.Panel.Controls.Add(this.label1);
@@ -69,9 +71,9 @@ namespace MC_Aero_Taskbar_Plugin
             // 
             // tvPlaylists
             // 
-            this.tvPlaylists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tvPlaylists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tvPlaylists.CheckBoxes = true;
             this.tvPlaylists.Location = new System.Drawing.Point(371, 47);
             this.tvPlaylists.Name = "tvPlaylists";
@@ -223,6 +225,18 @@ namespace MC_Aero_Taskbar_Plugin
             this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
+            // lblItemCountWarning
+            // 
+            this.lblItemCountWarning.AutoSize = true;
+            this.lblItemCountWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblItemCountWarning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.lblItemCountWarning.Location = new System.Drawing.Point(459, 14);
+            this.lblItemCountWarning.Name = "lblItemCountWarning";
+            this.lblItemCountWarning.Size = new System.Drawing.Size(290, 13);
+            this.lblItemCountWarning.TabIndex = 13;
+            this.lblItemCountWarning.Text = "WARNING: Some items may not appear in jumplist";
+            this.lblItemCountWarning.Visible = false;
+            // 
             // MainInterface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -260,6 +274,7 @@ namespace MC_Aero_Taskbar_Plugin
         private System.Windows.Forms.TextBox txtUserInfo;
         private System.Windows.Forms.Label lblPlaylists;
         private System.Windows.Forms.TreeView tvPlaylists;
+        private System.Windows.Forms.Label lblItemCountWarning;
 
     }
 }
