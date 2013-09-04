@@ -12,13 +12,13 @@ namespace MC_Aero_Taskbar_Plugin
         public bool TrackProgress;
         public bool PlaylistProgress;
         public bool NoProgressTrack;
-        public Dictionary<string, HashSet<string>> _pinnedPlaylists;
+        public Dictionary<string, HashSet<string>> _pinnedServerPlaylists;
 
         public HashSet<string> GetPinnedPlaylists(string library)
         {
-            if (_pinnedPlaylists == null) _pinnedPlaylists = new Dictionary<string, HashSet<string>>();
-            if (!_pinnedPlaylists.ContainsKey(library)) _pinnedPlaylists[library] = new HashSet<string>(StringComparer.Ordinal);
-            return _pinnedPlaylists[library];
+            if (_pinnedServerPlaylists == null) _pinnedServerPlaylists = new Dictionary<string, HashSet<string>>();
+            if (!_pinnedServerPlaylists.ContainsKey(library)) _pinnedServerPlaylists[library] = new HashSet<string>(StringComparer.Ordinal);
+            return _pinnedServerPlaylists[library];
         }
     }
 }
