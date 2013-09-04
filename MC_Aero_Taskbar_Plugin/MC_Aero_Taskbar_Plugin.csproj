@@ -57,6 +57,9 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -85,7 +88,7 @@
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
     <Compile Include="JrMainWindow.cs" />
-    <Compile Include="JumplistDestination.cs" />
+    <Compile Include="McAeroTaskbarSettings.cs" />
     <Compile Include="ScreenCapture.cs" />
     <Compile Include="MainInterface.cs">
       <SubType>UserControl</SubType>
@@ -176,27 +179,27 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\vistabridgelibrary\vistabridgelibrary.csproj">
+    <ProjectReference Include="..\lib\vistabridgelibrary\vistabridgelibrary.csproj">
       <Project>{CE304F35-FABF-4A24-AC48-5710670A82BE}</Project>
       <Name>vistabridgelibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Windows7.DesktopIntegration.Registration\Windows7.DesktopIntegration.Registration.csproj">
+    <ProjectReference Include="..\lib\Windows7.DesktopIntegration.Registration\Windows7.DesktopIntegration.Registration.csproj">
       <Project>{03F9F5A8-F3F4-499A-8B15-57ADBA5148CC}</Project>
       <Name>Windows7.DesktopIntegration.Registration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Windows7.DesktopIntegration\Windows7.DesktopIntegration.csproj">
+    <ProjectReference Include="..\lib\Windows7.DesktopIntegration\Windows7.DesktopIntegration.csproj">
       <Project>{E3F064A7-ECEF-46B8-83BD-299E4E8BDF82}</Project>
       <Name>Windows7.DesktopIntegration</Name>
     </ProjectReference>
-    <ProjectReference Include="lib\Core\Core.csproj">
+    <ProjectReference Include="..\lib\Core\Core.csproj">
       <Project>{2e1fb0df-f9bb-4909-9f32-2d9d022a8e57}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="lib\ShellExtensions\ShellExtensions.csproj">
+    <ProjectReference Include="..\lib\ShellExtensions\ShellExtensions.csproj">
       <Project>{f3c863ec-33f4-4ed2-9d67-00bf3eeeab64}</Project>
       <Name>ShellExtensions</Name>
     </ProjectReference>
-    <ProjectReference Include="lib\Shell\Shell.csproj">
+    <ProjectReference Include="..\lib\Shell\Shell.csproj">
       <Project>{aa0c00cb-8699-4f37-bfae-40ca87acc06d}</Project>
       <Name>Shell</Name>
     </ProjectReference>
