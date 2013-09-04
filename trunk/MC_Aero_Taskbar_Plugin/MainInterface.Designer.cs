@@ -29,6 +29,7 @@ namespace MC_Aero_Taskbar_Plugin
         private void InitializeComponent()
         {
             this.Panel = new System.Windows.Forms.Panel();
+            this.lblItemCountWarning = new System.Windows.Forms.Label();
             this.tvPlaylists = new System.Windows.Forms.TreeView();
             this.lblPlaylists = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -45,7 +46,8 @@ namespace MC_Aero_Taskbar_Plugin
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.lblItemCountWarning = new System.Windows.Forms.Label();
+            this.bwBuildPlaylistTree = new System.ComponentModel.BackgroundWorker();
+            this.lblRefreshing = new System.Windows.Forms.Label();
             this.Panel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.mainPanel.SuspendLayout();
@@ -56,6 +58,7 @@ namespace MC_Aero_Taskbar_Plugin
             this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.Controls.Add(this.lblRefreshing);
             this.Panel.Controls.Add(this.lblItemCountWarning);
             this.Panel.Controls.Add(this.tvPlaylists);
             this.Panel.Controls.Add(this.lblPlaylists);
@@ -68,6 +71,18 @@ namespace MC_Aero_Taskbar_Plugin
             this.Panel.Name = "Panel";
             this.Panel.Size = new System.Drawing.Size(886, 594);
             this.Panel.TabIndex = 0;
+            // 
+            // lblItemCountWarning
+            // 
+            this.lblItemCountWarning.AutoSize = true;
+            this.lblItemCountWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblItemCountWarning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.lblItemCountWarning.Location = new System.Drawing.Point(459, 14);
+            this.lblItemCountWarning.Name = "lblItemCountWarning";
+            this.lblItemCountWarning.Size = new System.Drawing.Size(290, 13);
+            this.lblItemCountWarning.TabIndex = 13;
+            this.lblItemCountWarning.Text = "WARNING: Some items may not appear in jumplist";
+            this.lblItemCountWarning.Visible = false;
             // 
             // tvPlaylists
             // 
@@ -225,17 +240,20 @@ namespace MC_Aero_Taskbar_Plugin
             this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
-            // lblItemCountWarning
+            // bwBuildPlaylistTree
             // 
-            this.lblItemCountWarning.AutoSize = true;
-            this.lblItemCountWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblItemCountWarning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.lblItemCountWarning.Location = new System.Drawing.Point(459, 14);
-            this.lblItemCountWarning.Name = "lblItemCountWarning";
-            this.lblItemCountWarning.Size = new System.Drawing.Size(290, 13);
-            this.lblItemCountWarning.TabIndex = 13;
-            this.lblItemCountWarning.Text = "WARNING: Some items may not appear in jumplist";
-            this.lblItemCountWarning.Visible = false;
+            this.bwBuildPlaylistTree.WorkerSupportsCancellation = true;
+            this.bwBuildPlaylistTree.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bwBuildPlaylistTree_DoWork);
+            this.bwBuildPlaylistTree.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bwBuildPlaylistTree_RunWorkerCompleted);
+            // 
+            // lblRefreshing
+            // 
+            this.lblRefreshing.AutoSize = true;
+            this.lblRefreshing.Location = new System.Drawing.Point(371, 30);
+            this.lblRefreshing.Name = "lblRefreshing";
+            this.lblRefreshing.Size = new System.Drawing.Size(58, 13);
+            this.lblRefreshing.TabIndex = 14;
+            this.lblRefreshing.Text = "Refreshing";
             // 
             // MainInterface
             // 
@@ -275,6 +293,8 @@ namespace MC_Aero_Taskbar_Plugin
         private System.Windows.Forms.Label lblPlaylists;
         private System.Windows.Forms.TreeView tvPlaylists;
         private System.Windows.Forms.Label lblItemCountWarning;
+        private System.ComponentModel.BackgroundWorker bwBuildPlaylistTree;
+        private System.Windows.Forms.Label lblRefreshing;
 
     }
 }

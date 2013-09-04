@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,10 +38,9 @@ namespace MC_Aero_Taskbar_Plugin
 
         public static void Save(T pSettings, string fileName = DEFAULT_FILENAME)
         {
-            using (FileStream fs = new FileStream(fileName, File.Exists(fileName) ? FileMode.Truncate : FileMode.OpenOrCreate))
+            using (StreamWriter sw = new StreamWriter(fileName, false))
             {
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T));
-                ser.WriteObject(fs, pSettings);
+                sw.Write(JsonConvert.SerializeObject(pSettings));
             }
         }
 
@@ -49,11 +49,7 @@ namespace MC_Aero_Taskbar_Plugin
             T t = new T();
             if (File.Exists(fileName))
             {
-                using (FileStream fs = new FileStream(fileName, FileMode.Open))
-                {
-                    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T));
-                    t = (T)ser.ReadObject(fs);
-                }
+                t = JsonConvert.DeserializeObject<T>(File.ReadAllText(fileName));
             }
             return t;
         }

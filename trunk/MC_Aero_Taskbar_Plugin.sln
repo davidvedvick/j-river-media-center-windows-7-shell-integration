@@ -1,21 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vistabridgelibrary", "vistabridgelibrary\vistabridgelibrary.csproj", "{CE304F35-FABF-4A24-AC48-5710670A82BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vistabridgelibrary", "lib\vistabridgelibrary\vistabridgelibrary.csproj", "{CE304F35-FABF-4A24-AC48-5710670A82BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows7.DesktopIntegration", "Windows7.DesktopIntegration\Windows7.DesktopIntegration.csproj", "{E3F064A7-ECEF-46B8-83BD-299E4E8BDF82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows7.DesktopIntegration", "lib\Windows7.DesktopIntegration\Windows7.DesktopIntegration.csproj", "{E3F064A7-ECEF-46B8-83BD-299E4E8BDF82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows7.DesktopIntegration.Registration", "Windows7.DesktopIntegration.Registration\Windows7.DesktopIntegration.Registration.csproj", "{03F9F5A8-F3F4-499A-8B15-57ADBA5148CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows7.DesktopIntegration.Registration", "lib\Windows7.DesktopIntegration.Registration\Windows7.DesktopIntegration.Registration.csproj", "{03F9F5A8-F3F4-499A-8B15-57ADBA5148CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1A9330E-01AC-4E7C-9ACD-6A63F38EF344}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MC_Aero_Taskbar_Plugin", "MC_Aero_Taskbar_Plugin\MC_Aero_Taskbar_Plugin.csproj", "{AF0C732C-3E35-43C2-BA06-743EEA0EAE45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "MC_Aero_Taskbar_Plugin\lib\Core\Core.csproj", "{2E1FB0DF-F9BB-4909-9F32-2D9D022A8E57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "lib\Core\Core.csproj", "{2E1FB0DF-F9BB-4909-9F32-2D9D022A8E57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shell", "MC_Aero_Taskbar_Plugin\lib\Shell\Shell.csproj", "{AA0C00CB-8699-4F37-BFAE-40CA87ACC06D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shell", "lib\Shell\Shell.csproj", "{AA0C00CB-8699-4F37-BFAE-40CA87ACC06D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellExtensions", "MC_Aero_Taskbar_Plugin\lib\ShellExtensions\ShellExtensions.csproj", "{F3C863EC-33F4-4ED2-9D67-00BF3EEEAB64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellExtensions", "lib\ShellExtensions\ShellExtensions.csproj", "{F3C863EC-33F4-4ED2-9D67-00BF3EEEAB64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

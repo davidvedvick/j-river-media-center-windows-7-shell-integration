@@ -52,7 +52,7 @@ namespace MC_Aero_Taskbar_Plugin
         private const string RECENTLY_IMPORTED = "Recently Imported";
         private const string TOP_HITS = "Top Hits";
         private JumpListCustomCategory playlistCategory;
-        //private static CustomWindowsManager cwm;
+        private bool IsSecondRefreshRequested = false;
 
         #endregion
 
@@ -186,6 +186,7 @@ namespace MC_Aero_Taskbar_Plugin
                 playlistProgress.Checked = appSettings.Settings.PlaylistProgress;
                 noProgressTrack.Checked = appSettings.Settings.NoProgressTrack;
                 BuildPlaylistTree(mcRef.GetPlaylists());
+                refreshUserTasks();
             }
             catch (Exception e)
             {
@@ -200,41 +201,15 @@ namespace MC_Aero_Taskbar_Plugin
 
         private void BuildPlaylistTree(IMJPlaylistsAutomation playlists)
         {
-            tvPlaylists.Nodes.Clear();
-            TreeNode newNode;
-
-            IMJPlaylistAutomation currentPlaylist = playlists.GetPlaylist(-2);
-            newNode = tvPlaylists.Nodes.Add(RECENTLY_IMPORTED);
-            newNode.Tag = RECENTLY_IMPORTED;
-            newNode.Checked = appSettings.Settings.PinnedPlaylists.Contains(RECENTLY_IMPORTED);
-
-            currentPlaylist = playlists.GetPlaylist(-1);
-            newNode = tvPlaylists.Nodes.Add(TOP_HITS);
-            newNode.Tag = TOP_HITS;
-            newNode.Checked = appSettings.Settings.PinnedPlaylists.Contains(TOP_HITS);
-
-            for (int i = 0; i < playlists.GetNumberPlaylists(); i++)
+            if (bwBuildPlaylistTree.IsBusy)
             {
-                currentPlaylist = playlists.GetPlaylist(i);
-                newNode = String.IsNullOrEmpty(currentPlaylist.Path) ? tvPlaylists.Nodes.AddUniqueNode(currentPlaylist.Name) : GetFolderNode(tvPlaylists.Nodes, currentPlaylist.Path).Nodes.AddUniqueNode(currentPlaylist.Name);
-                newNode.Tag = currentPlaylist.Path + "\\" + currentPlaylist.Name;
-                newNode.Checked = appSettings.Settings.PinnedPlaylists.Contains(newNode.Tag.ToString());
+                IsSecondRefreshRequested = true;
+                return;
             }
+            lblRefreshing.Visible = true;
+            tvPlaylists.Enabled = false;
+            bwBuildPlaylistTree.RunWorkerAsync(playlists);
         }
-
-        private TreeNode GetFolderNode(TreeNodeCollection nodes, string path)
-        {
-            TreeNode returnNode = null;
-
-            string[] findPath = path.Split(new char[] { '\\' }, 2);
-
-            returnNode = nodes.AddUniqueNode(findPath[0]);
-            if (findPath[0] != path) return GetFolderNode(returnNode.Nodes, findPath[1]);
-
-            return returnNode;
-        }
-
-       
 
         private void initAll()
         {
@@ -387,7 +362,6 @@ namespace MC_Aero_Taskbar_Plugin
             // Debug info
             addUserInfoText(strCommand + "/" + strEvent + "/" + strEventInfo);
 
-            //ScreenCapture.GrabWindowBitmap((IntPtr)mcRef.GetWindowHandle(), new Size(windowsize.Width, windowsize.Height), out screen);
             switch (strCommand)
             {
                 case "MJEvent type: MCCommand":
@@ -396,8 +370,6 @@ namespace MC_Aero_Taskbar_Plugin
                         case "MCC: NOTIFY_TRACK_CHANGE":
                         case "MCC: NOTIFY_PLAYERSTATE_CHANGE":
                             setWindowsPreview();
-
-                            //backgroundWorker1.RunWorkerAsync();
                             break;
 
                         case "MCC: NOTIFY_PLAYLIST_ADDED":
@@ -418,6 +390,12 @@ namespace MC_Aero_Taskbar_Plugin
 
                 default:
                     break;
+            }
+
+            if (strEvent == "MCC: NOTIFY_TRACK_CHANGE" && strEventInfo == "-1")
+            {
+                BuildPlaylistTree(mcRef.GetPlaylists());
+                refreshUserTasks();
             }
         }
 
@@ -479,11 +457,11 @@ namespace MC_Aero_Taskbar_Plugin
         {
             if (e.Node.Checked)
             {
-                appSettings.Settings.PinnedPlaylists.Add(e.Node.Tag.ToString());
+                appSettings.Settings.GetPinnedPlaylists(GetLibraryName()).Add(e.Node.Tag.ToString());
             }
             else
             {
-                appSettings.Settings.PinnedPlaylists.Remove(e.Node.Tag.ToString());
+                appSettings.Settings.GetPinnedPlaylists(GetLibraryName()).Remove(e.Node.Tag.ToString());
             }
             appSettings.Save();
             refreshUserTasks();
@@ -496,7 +474,7 @@ namespace MC_Aero_Taskbar_Plugin
 
             lblItemCountWarning.Visible = false;
             int i = 0;
-            foreach (string playlistPath in appSettings.Settings.PinnedPlaylists)
+            foreach (string playlistPath in appSettings.Settings.GetPinnedPlaylists(GetLibraryName()))
             {
                 string link = "MC" + mcRef.GetVersion().Major.ToString() + ".exe";
                 JumpListLink item = new JumpListLink(link, playlistPath.Remove(0, playlistPath.LastIndexOf('\\') + 1));
@@ -507,6 +485,59 @@ namespace MC_Aero_Taskbar_Plugin
             
             jumpList.Refresh();
         }
+
+        private void bwBuildPlaylistTree_DoWork(object sender, DoWorkEventArgs e)
+        {
+            IMJPlaylistsAutomation playlists = (IMJPlaylistsAutomation)e.Argument;
+            
+            TreeNode returnDummyNode = new TreeNode();
+            TreeNode newNode;
+
+            IMJPlaylistAutomation currentPlaylist = playlists.GetPlaylist(-2);
+            if (currentPlaylist != null)
+            {
+                newNode = returnDummyNode.Nodes.Add(RECENTLY_IMPORTED);
+                newNode.Tag = RECENTLY_IMPORTED;
+                newNode.Checked = appSettings.Settings.GetPinnedPlaylists(GetLibraryName()).Contains(RECENTLY_IMPORTED);
+            }
+
+            currentPlaylist = playlists.GetPlaylist(-1);
+            if (currentPlaylist != null)
+            {
+                newNode = returnDummyNode.Nodes.Add(TOP_HITS);
+                newNode.Tag = TOP_HITS;
+                newNode.Checked = appSettings.Settings.GetPinnedPlaylists(GetLibraryName()).Contains(TOP_HITS);
+            }
+
+            for (int i = 0; i < playlists.GetNumberPlaylists(); i++)
+            {
+                if (e.Cancel) break;
+                currentPlaylist = playlists.GetPlaylist(i);
+                newNode = string.IsNullOrEmpty(currentPlaylist.Path) ? returnDummyNode.Nodes.AddUniqueNode(currentPlaylist.Name) : GetFolderNode(returnDummyNode.Nodes, currentPlaylist.Path).Nodes.AddUniqueNode(currentPlaylist.Name);
+                newNode.Tag = currentPlaylist.Path + "\\" + currentPlaylist.Name;
+                newNode.Checked = appSettings.Settings.GetPinnedPlaylists(GetLibraryName()).Contains(newNode.Tag.ToString());
+            }
+
+            HashSet<TreeNode> result = new HashSet<TreeNode>();
+            foreach (TreeNode node in returnDummyNode.Nodes) result.Add(node);
+
+            e.Result = result;
+        }
+
+        private void bwBuildPlaylistTree_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (IsSecondRefreshRequested)
+            {
+                BuildPlaylistTree(mcRef.GetPlaylists());
+                IsSecondRefreshRequested = false;
+                return;
+            }
+            tvPlaylists.Nodes.Clear();
+            tvPlaylists.Nodes.AddRange(((HashSet<TreeNode>)e.Result).ToArray());
+            tvPlaylists.Enabled = true;
+            lblRefreshing.Visible = false;
+        }
+
         #endregion
 
         #region MC Window Handlers
@@ -564,6 +595,17 @@ namespace MC_Aero_Taskbar_Plugin
         #endregion
 
         #region Miscellaneous Functions
+        private TreeNode GetFolderNode(TreeNodeCollection nodes, string path)
+        {
+            TreeNode returnNode = null;
+
+            string[] findPath = path.Split(new char[] { '\\' }, 2);
+
+            returnNode = nodes.AddUniqueNode(findPath[0]);
+            if (findPath[0] != path) return GetFolderNode(returnNode.Nodes, findPath[1]);
+
+            return returnNode;
+        }
 
         private void setWindowsPreview()
         {
@@ -599,8 +641,13 @@ namespace MC_Aero_Taskbar_Plugin
             
         }
 
-        [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern void DwmQueryThumbnailSourceSize(IntPtr hThumbnail, out Size size);
+        private string GetLibraryName()
+        {
+            string libraryName = "", libraryPath = "";
+            mcRef.GetLibrary(ref libraryName, ref libraryPath);
+            return libraryName;
+        }
+
         private void setThumbnail(string currentFile)
         {
             // Can't imagine a thumnbail having much smaller size than this.
@@ -669,36 +716,6 @@ namespace MC_Aero_Taskbar_Plugin
         }
 
         #endregion
-
-        [DataContract]
-        private class McAeroTaskbarSettings
-        {
-            [DataMember]
-            public bool EnableCoverArt;
-            [DataMember]
-            public bool DisplayArtistTrackName;
-            [DataMember]
-            public bool TrackProgress;
-            [DataMember]
-            public bool PlaylistProgress;
-            [DataMember]
-            public bool NoProgressTrack;
-            [DataMember]
-            private HashSet<string> _pinnedPlaylists;
-
-            public HashSet<string> PinnedPlaylists
-            {
-                get
-                {
-                    if (_pinnedPlaylists == null) _pinnedPlaylists = new HashSet<string>(StringComparer.Ordinal);
-                    return _pinnedPlaylists;
-                }
-                set
-                {
-                    _pinnedPlaylists = value;
-                }
-            }
-        }
     }
 
     public static class TreeNodeExtensions
