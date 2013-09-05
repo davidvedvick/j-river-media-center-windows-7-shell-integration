@@ -549,28 +549,31 @@ namespace MC_Aero_Taskbar_Plugin
 
                 if (trackProgress.Checked)
                 {
-                    if (playback.State == MJPlaybackStates.PLAYSTATE_PLAYING)
+                    switch (playback.State)
                     {
-                        //Windows7Taskbar.SetProgressState((IntPtr)mcRef.GetWindowHandle(), Windows7Taskbar.ThumbnailProgressState.Normal);
-                        jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
-                        //addUserInfoText("Duration: " + playback.Duration);
-                        if (nowPlayingFile.Duration <= 0) jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Indeterminate);
-                        else
-                        {
-                            if (playback.Position >= 0) jrWin.SetProgressValue(playback.Position, nowPlayingFile.Duration);
-                        }
+                        case MJPlaybackStates.PLAYSTATE_PLAYING:
+                            jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
+                            if (nowPlayingFile.Duration <= 0) jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Indeterminate);
+                            else if (playback.Position >= 0) jrWin.SetProgressValue(playback.Position, nowPlayingFile.Duration);
+                            break;
+                        case MJPlaybackStates.PLAYSTATE_PAUSED:
+                            jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Paused);
+                            break;
+                        default:
+                            jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
+                            break;
                     }
-                    else if (playback.State == MJPlaybackStates.PLAYSTATE_PAUSED) jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Paused);
+                    return;
                 }
-                else if (playlistProgress.Checked)
+                
+                if (playlistProgress.Checked)
                 {
                     jrWin.SetProgressState(playback.State != MJPlaybackStates.PLAYSTATE_PAUSED ? Windows7Taskbar.ThumbnailProgressState.Normal : Windows7Taskbar.ThumbnailProgressState.Paused);
                     jrWin.SetProgressValue(mcRef.GetCurPlaylist().Position, mcRef.GetCurPlaylist().GetNumberFiles());
+                    return;
                 }
-                else
-                {
-                    jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
-                }
+                
+                jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
             }
             catch (Exception ex)
             {
