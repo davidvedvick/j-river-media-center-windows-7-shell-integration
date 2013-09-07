@@ -152,16 +152,18 @@ namespace MC_Aero_Taskbar_Plugin
             Windows7Taskbar.SetProgressValue(this.Handle, (ulong)current, (ulong)maximum);
         }
 
-        public void SetWindowTitle(string title)
+        public string WindowTitle
         {
-            SetWindowText(this.Handle, title);
-        }
-
-        public string GetWindowTitle()
-        {
-            StringBuilder sb = new StringBuilder(400);
-            GetWindowText(this.Handle, sb, sb.Capacity);
-            return sb.ToString();
+            get
+            {
+                StringBuilder sb = new StringBuilder(400);
+                GetWindowText(this.Handle, sb, sb.Capacity);
+                return sb.ToString();
+            }
+            set
+            {
+                SetWindowText(this.Handle, value);
+            }
         }
 
         public void SetThumbnailPreview(Bitmap thumbBmp)

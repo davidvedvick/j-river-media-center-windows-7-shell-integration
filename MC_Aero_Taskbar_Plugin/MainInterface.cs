@@ -157,7 +157,7 @@ namespace MC_Aero_Taskbar_Plugin
                     this.mcRef = null;
                     this.Dispose();
                 };
-                oldWindowText = jrWin.GetWindowTitle();
+                oldWindowText = jrWin.WindowTitle;
                 setWindowsPreview();
 
                 jumpList = JumpList.CreateJumpList();
@@ -631,13 +631,13 @@ namespace MC_Aero_Taskbar_Plugin
                         setThumbnail(playingFileImgLocation);
                     }
 
-                    jrWin.SetWindowTitle(displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText);
+                    jrWin.WindowTitle = displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText;
                     break;
                 case MJPlaybackStates.PLAYSTATE_WAITING:
                     jrWin.SetProgressValue(0, 1);
                     jrWin.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Indeterminate);
                     nowPlayingFile = mcRef.GetCurPlaylist().GetFile(mcRef.GetCurPlaylist().Position);
-                    jrWin.SetWindowTitle(displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText);
+                    jrWin.WindowTitle = displayArtistTrackName.Checked ? (nowPlayingFile.Artist + " - " + nowPlayingFile.Name) : oldWindowText;
                     break;
             }
             
