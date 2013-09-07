@@ -159,7 +159,7 @@ namespace MC_Aero_Taskbar_Plugin
 
         public string GetWindowTitle()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(400);
             GetWindowText(this.Handle, sb, sb.Capacity);
             return sb.ToString();
         }

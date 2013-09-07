@@ -317,7 +317,6 @@ namespace MC_Aero_Taskbar_Plugin
             {
                 setBackColor(control, getColor("Tree", "BackColor"));
                 setForeColor(control, getColor("Tree", "TextColor"));
-
                 control = this.GetNextControl(control, true);
             }
         }
